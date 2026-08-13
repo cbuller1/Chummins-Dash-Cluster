@@ -12,8 +12,9 @@ qt6_add_qml_module(Chummins_DashContent
         "App.qml"
         "DriveStatus.ui.qml"
         "Screen01.ui.qml"
-        "Tachometer.ui.qml"
         "Speedometer.ui.qml"
+        "Tachometer.ui.qml"
+        "Constants.ui.qml"
     RESOURCES
         "images/chummins_bg.png"
         "images/chummins_front.png"

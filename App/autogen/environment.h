@@ -8,7 +8,6 @@
 #include <QGuiApplication>
 #include "qqmlextensionplugin.h"
 
-Q_IMPORT_QML_PLUGIN(Chummins_DashPlugin)
 Q_IMPORT_QML_PLUGIN(Chummins_DashContentPlugin)
 
 const char mainQmlFile[] = "qrc:/qt/qml/Chummins_DashContent/App.qml";

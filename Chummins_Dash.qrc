@@ -1,11 +1,8 @@
 <RCC>
     <qresource>
         <file>Chummins_Dash.qmlproject</file>
-        <file>Chummins_Dash/Constants.qml</file>
-        <file>Chummins_Dash/EventListModel.qml</file>
-        <file>Chummins_Dash/EventListSimulator.qml</file>
-        <file>Chummins_Dash/qmldir</file>
         <file>Chummins_DashContent/App.qml</file>
+        <file>Chummins_DashContent/Constants.ui.qml</file>
         <file>Chummins_DashContent/DriveStatus.ui.qml</file>
         <file>Chummins_DashContent/images/chummins_bg.png</file>
         <file>Chummins_DashContent/images/chummins_front.png</file>

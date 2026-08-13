@@ -7,160 +7,277 @@ Item {
     // ==============================
     // PUBLIC PROPERTIES
     // ==============================
-    property bool overdriveActive: false
-    property bool lockupActive: false
+    property bool overdriveActive: true
+    property bool lockupActive: true
 
     // Expected values:
     // "normal"
     // "lugging"
-    // "economy"
     // "power"
-    property string driveState: "normal"
+    // "redline"
+    property string driveState: "power"
 
+    // Shared font size for drive mode + hint
+    property int driveStateFontSize: 13
+
+    // Warning is active for either red state
+    property bool warningActive: driveState === "lugging"
+                                 || driveState === "redline"
+
+    // ==============================
+    // COMPONENT SIZE
+    // ==============================
     width: 200
-    height: 100
+    height: width * 0.5
 
     // ==============================
-    // OVERDRIVE LABEL
+    // FIXED DESIGN CANVAS
     // ==============================
-    Text {
-        id: overdriveLabel
+    Item {
+        id: content
 
-        anchors.left: parent.left
-        anchors.leftMargin: 15
-        anchors.top: parent.top
-        anchors.topMargin: 8
+        width: 200
+        height: 100
 
-        text: "OVERDRIVE"
+        anchors.centerIn: parent
 
-        color: "#909090"
+        // Scale entire component together
+        scale: root.width / 200
 
-        font.pixelSize: 10
-        font.bold: true
-    }
+        // ==============================
+        // OVERDRIVE ROW
+        // ==============================
+        Item {
+            id: overdriveRow
 
-    // ==============================
-    // OVERDRIVE STATUS
-    // ==============================
-    Rectangle {
-        id: overdriveStatus
+            width: 170
+            height: 24
 
-        width: 42
-        height: 20
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 2
 
-        anchors.right: parent.right
-        anchors.rightMargin: 15
-        anchors.verticalCenter: overdriveLabel.verticalCenter
+            // STATUS DOT
+            Rectangle {
+                id: overdriveDot
 
-        radius: 4
+                width: 8
+                height: 8
+                radius: 4
 
-        color: root.overdriveActive ? "#39D353" : "#101010"
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
 
-        border.width: 1
-        border.color: root.overdriveActive ? "#6BE57E" : "#505050"
+                color: root.overdriveActive ? "#48D978" : "#303030"
 
-        Text {
-            anchors.centerIn: parent
+                border.width: 1
+                border.color: root.overdriveActive ? "#73E99A" : "#505050"
+            }
 
-            text: root.overdriveActive ? "ON" : "OFF"
+            // LABEL
+            Text {
+                id: overdriveLabel
 
-            color: root.overdriveActive ? "#050505" : "#606060"
+                anchors.left: overdriveDot.right
+                anchors.leftMargin: 9
+                anchors.verticalCenter: parent.verticalCenter
 
-            font.pixelSize: 10
-            font.bold: true
+                text: "OVERDRIVE"
+
+                color: root.overdriveActive ? "#E8E8E8" : "#707070"
+
+                font.pixelSize: 12
+                font.bold: true
+                font.letterSpacing: 0.5
+            }
+
+            // STATE
+            Text {
+                id: overdriveState
+
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+
+                text: root.overdriveActive ? "ON" : "OFF"
+
+                color: root.overdriveActive ? "#48D978" : "#606060"
+
+                font.pixelSize: 12
+                font.bold: true
+                font.letterSpacing: 0.5
+            }
         }
-    }
 
-    // ==============================
-    // TC LOCKUP LABEL
-    // ==============================
-    Text {
-        id: lockupLabel
+        // ==============================
+        // TC LOCKUP ROW
+        // ==============================
+        Item {
+            id: lockupRow
 
-        anchors.left: parent.left
-        anchors.leftMargin: 15
+            width: 170
+            height: 24
 
-        anchors.top: overdriveLabel.bottom
-        anchors.topMargin: 12
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: overdriveRow.bottom
 
-        text: "TC LOCKUP"
+            // STATUS DOT
+            Rectangle {
+                id: lockupDot
 
-        color: "#909090"
+                width: 8
+                height: 8
+                radius: 4
 
-        font.pixelSize: 10
-        font.bold: true
-    }
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
 
-    // ==============================
-    // TC LOCKUP STATUS
-    // ==============================
-    Rectangle {
-        id: lockupStatus
+                color: root.lockupActive ? "#48D978" : "#303030"
 
-        width: 42
-        height: 20
+                border.width: 1
+                border.color: root.lockupActive ? "#73E99A" : "#505050"
+            }
 
-        anchors.right: parent.right
-        anchors.rightMargin: 15
-        anchors.verticalCenter: lockupLabel.verticalCenter
+            // LABEL
+            Text {
+                id: lockupLabel
 
-        radius: 4
+                anchors.left: lockupDot.right
+                anchors.leftMargin: 9
+                anchors.verticalCenter: parent.verticalCenter
 
-        color: root.lockupActive ? "#39D353" : "#101010"
+                text: "TC LOCKUP"
 
-        border.width: 1
-        border.color: root.lockupActive ? "#6BE57E" : "#505050"
+                color: root.lockupActive ? "#E8E8E8" : "#707070"
 
-        Text {
-            anchors.centerIn: parent
+                font.pixelSize: 12
+                font.bold: true
+                font.letterSpacing: 0.5
+            }
 
-            text: root.lockupActive ? "ON" : "OFF"
+            // STATE
+            Text {
+                id: lockupState
 
-            color: root.lockupActive ? "#050505" : "#606060"
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
 
-            font.pixelSize: 10
-            font.bold: true
+                text: root.lockupActive ? "ON" : "OFF"
+
+                color: root.lockupActive ? "#48D978" : "#606060"
+
+                font.pixelSize: 12
+                font.bold: true
+                font.letterSpacing: 0.5
+            }
         }
-    }
 
-    // ==============================
-    // SEPARATOR
-    // ==============================
-    Rectangle {
-        id: separator
+        // ==============================
+        // SEPARATOR
+        // ==============================
+        Rectangle {
+            id: separator
 
-        anchors.left: parent.left
-        anchors.right: parent.right
+            width: 170
+            height: 1
 
-        anchors.leftMargin: 15
-        anchors.rightMargin: 15
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: lockupRow.bottom
+            anchors.topMargin: 3
 
-        anchors.top: lockupLabel.bottom
-        anchors.topMargin: 12
+            color: "#303030"
+        }
 
-        height: 1
+        // ==============================
+        // DRIVE STATE AREA
+        // ==============================
+        Item {
+            id: driveStateArea
 
-        color: "#404040"
-    }
+            width: 170
+            height: 34
 
-    // ==============================
-    // DYNAMIC OPERATING STATE
-    // ==============================
-    Text {
-        id: driveStateText
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: separator.bottom
+            anchors.topMargin: 3
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: separator.bottom
-        anchors.topMargin: 10
+            // ==========================
+            // DRIVE MODE + HINT
+            // ==========================
+            Row {
+                id: driveStateRow
 
-        text: root.driveState === "lugging" ? "!  LUGGING - UNLOCK TC" : root.driveState
-                                              === "power" ? "POWER BAND" : "NORMAL"
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
 
-        color: root.driveState === "lugging" ? "#FF3030" : root.driveState
-                                               === "power" ? "#39D353" : "#606060"
+                spacing: 12
 
-        font.pixelSize: root.driveState === "lugging" ? 11 : 13
-        font.bold: true
-        font.letterSpacing: 0.7
+                // Steady at full brightness normally.
+                // Warning animation overrides opacity
+                // while running.
+                opacity: root.warningActive ? 0.45 : 1.0
+
+                // ==========================
+                // WARNING PULSE
+                // LUGGING:
+                // 500 ms down + 500 ms up
+                // REDLINE:
+                // 250 ms down + 250 ms up
+                // ==========================
+                SequentialAnimation on opacity {
+                    id: warningPulse
+
+                    running: root.warningActive
+                    loops: Animation.Infinite
+
+                    NumberAnimation {
+                        from: 1.0
+                        to: 0.45
+
+                        duration: root.driveState === "redline" ? 250 : 500
+
+                        easing.type: Easing.InOutQuad
+                    }
+
+                    NumberAnimation {
+                        from: 0.45
+                        to: 1.0
+
+                        duration: root.driveState === "redline" ? 250 : 500
+
+                        easing.type: Easing.InOutQuad
+                    }
+                }
+
+                // ======================
+                // OPERATING STATE
+                // ======================
+                Text {
+                    id: driveStateText
+
+                    text: root.driveState === "redline" ? "REDLINE:" : root.driveState === "lugging" ? "LUGGING:" : root.driveState === "power" ? "POWER BAND:" : "NORMAL"
+
+                    color: root.driveState === "redline" ? "#FF3B30" : root.driveState === "lugging" ? "#FF3B30" : root.driveState === "power" ? "#48D978" : "#808080"
+
+                    font.pixelSize: root.driveStateFontSize
+                    font.bold: true
+                    font.letterSpacing: 0.8
+                }
+
+                // ======================
+                // ACTION / STATUS HINT
+                // ======================
+                Text {
+                    id: driveStateHint
+
+                    text: root.driveState === "redline" ? "BACK OFF" : root.driveState === "lugging" ? "UNLOCK TC" : root.driveState === "power" ? "OPTIMAL" : ""
+
+                    color: root.driveState === "redline" ? "#FF3B30" : root.driveState === "lugging" ? "#FF3B30" : root.driveState === "power" ? "#48D978" : "#606060"
+
+                    font.pixelSize: root.driveStateFontSize
+                    font.bold: true
+                    font.letterSpacing: 0.8
+                }
+            }
+        }
     }
 }

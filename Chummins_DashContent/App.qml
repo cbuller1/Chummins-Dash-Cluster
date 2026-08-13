@@ -1,5 +1,4 @@
 import QtQuick
-import Chummins_Dash
 import QtCharts
 import QtQuick.Controls
 import QtQuick.Studio.Components

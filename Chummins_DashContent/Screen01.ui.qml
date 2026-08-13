@@ -8,12 +8,13 @@ Check out https://doc.qt.io/qtcreator/creator-quick-ui-forms.html for details on
 */
 import QtQuick
 import QtQuick.Controls
-import Chummins_Dash
 
 Rectangle {
+    x: 0
+    y: 0
     id: rectangle
-    width: Constants.width
-    height: Constants.height
+    width: 800
+    height: 480
     color: "#000000"
 
     StateGroup {
@@ -22,57 +23,65 @@ Rectangle {
 
     Image {
         id: image
-        x: 13
-        y: 27
+
+        x: 15
+        y: -3
+
+        // Locked native dimensions
         width: 800
-        height: 400
+        height: 480
+
         source: "images/chummins_bg.png"
         fillMode: Image.PreserveAspectFit
+
+        // Change ONLY this to visually resize it
+        scale: .80
     }
 
     Tachometer {
         id: tachometer
 
-        x: 553
-        y: 78
+        x: 509
+        y: 60
 
-        width: 233
-        height: 256
+        width: 290
+        height: 290
 
-        rpm: 1850
+        rpm: 1200
     }
 
     DriveStatus {
         id: driveStatus
 
-        x: 270
-        y: 377
-        width: 264
-        height: 129
+        x: 258
+        y: 356
+        width: 272
+        height: 125
 
         // Transmission states
         overdriveActive: true
         lockupActive: true
 
         // Engine operating state
-        // power, normal, lugging
+        // power, normal, lugging, redline
         driveState: "power"
     }
 
     Speedometer {
         id: speedometer
-        x: 0
-        y: 83
-        width: 232
-        height: 258
+        x: 1
+        y: 60
+        width: 290
+        height: 290
+        speed: 25
     }
 
     Image {
         id: image1
-        x: 307
-        y: 4
-        width: 184
-        height: 218
+        x: 286
+        y: -19
+        width: 218
+        height: 244
         source: "images/Cummins_logo.svg"
         fillMode: Image.PreserveAspectFit
     }
