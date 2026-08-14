@@ -1,26 +1,29 @@
 """
 ESP32 serial input handler.
 
-Reads incoming messages from an ESP32 over a UART/USB-serial connection and
-pushes parsed values into DashBackend.  The wire protocol is not yet defined —
-fill in _parse_message() once the ESP32 firmware message format is decided.
+Reads newline-delimited JSON from the ESP32 over USB CDC serial and pushes
+parsed values into DashBackend.
 
-Expected inbound data:
-    - Engine RPM
-    - Torque converter lockup status  (bool)
-    - Overdrive status                (bool)
-    - Gear selected                   (int, 0 = neutral)
+Wire format (20 Hz, from firmware serial_protocol.cpp):
+    {"rpm":...,"tps":...,"boost":...,"lockup":...,"od":...,"gear":...,"range":...}\n
 
 Install dependency:  pip install pyserial
 """
 
 from __future__ import annotations
 
+import json
+import logging
 import threading
 from typing import TYPE_CHECKING
 
+import serial
+import serial.serialutil
+
 if TYPE_CHECKING:
     from backend.dash_backend import DashBackend
+
+logger = logging.getLogger(__name__)
 
 
 class ESP32Serial:
@@ -32,7 +35,7 @@ class ESP32Serial:
         self._backend = backend
         self._port = port
         self._baud_rate = baud_rate
-        self._serial = None        # serial.Serial instance, set in connect()
+        self._serial: serial.Serial | None = None
         self._thread: threading.Thread | None = None
         self._running = False
 
@@ -42,13 +45,13 @@ class ESP32Serial:
 
     def connect(self) -> None:
         """Open the serial port."""
-        # TODO: import serial; self._serial = serial.Serial(self._port, self._baud_rate, timeout=1)
-        raise NotImplementedError
+        self._serial = serial.Serial(self._port, self._baud_rate, timeout=1)
+        logger.info("Connected to ESP32 on %s at %d baud", self._port, self._baud_rate)
 
     def disconnect(self) -> None:
         """Close the serial port."""
-        # TODO: if self._serial and self._serial.is_open: self._serial.close()
-        raise NotImplementedError
+        if self._serial and self._serial.is_open:
+            self._serial.close()
 
     # ------------------------------------------------------------------
     # Reader thread
@@ -71,34 +74,51 @@ class ESP32Serial:
 
     def _read_loop(self) -> None:
         """Background thread: continuously read lines from the serial port."""
-        # TODO: while self._running:
-        #           raw = self._serial.readline()
-        #           if raw:
-        #               self._parse_message(raw)
-        raise NotImplementedError
+        while self._running:
+            try:
+                raw = self._serial.readline()
+                if raw:
+                    self._parse_message(raw)
+            except serial.serialutil.SerialException as exc:
+                logger.error("Serial read error: %s", exc)
+                break
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Unexpected error in read loop: %s", exc)
 
     # ------------------------------------------------------------------
-    # Protocol parsing  (fill in once ESP32 message format is defined)
+    # Protocol parsing
     # ------------------------------------------------------------------
 
     def _parse_message(self, raw: bytes) -> None:
-        """
-        Parse one raw message and dispatch to the appropriate handler.
+        """Parse one newline-delimited JSON frame and dispatch to handlers."""
+        try:
+            data: dict = json.loads(raw.decode("utf-8", errors="replace"))
+        except json.JSONDecodeError:
+            logger.debug("Non-JSON line: %r", raw)
+            return
 
-        TODO: define the wire format with the ESP32 firmware, then implement.
-        Example formats to consider:
-            JSON:    b'{"rpm":1500,"gear":3,"lockup":true,"od":false}\\n'
-            Binary:  struct-packed bytes with a header/checksum
-            ASCII:   b'RPM:1500\\n', b'GEAR:3\\n', etc.
-        """
-        raise NotImplementedError
+        if "rpm"     in data: self._on_rpm(float(data["rpm"]))
+        if "tps"     in data: self._on_tps(float(data["tps"]))
+        if "boost"   in data: self._on_boost(float(data["boost"]))
+        if "lockup"  in data: self._on_lockup(bool(data["lockup"]))
+        if "od"      in data: self._on_overdrive(bool(data["od"]))
+        if "blink_l" in data: self._on_blinker_left(bool(data["blink_l"]))
+        if "blink_r" in data: self._on_blinker_right(bool(data["blink_r"]))
+        if "gear"    in data: self._on_gear(int(data["gear"]))
+        if "range"   in data: self._on_range(str(data["range"]))
 
     # ------------------------------------------------------------------
-    # Per-signal handlers — called by _parse_message
+    # Per-signal handlers
     # ------------------------------------------------------------------
 
     def _on_rpm(self, value: float) -> None:
         self._backend.rpm = value
+
+    def _on_tps(self, value: float) -> None:
+        self._backend.tps = value
+
+    def _on_boost(self, value: float) -> None:
+        self._backend.boost = value
 
     def _on_gear(self, gear: int) -> None:
         self._backend.gear = gear
@@ -108,3 +128,14 @@ class ESP32Serial:
 
     def _on_overdrive(self, active: bool) -> None:
         self._backend.overdriveActive = active
+
+    def _on_range(self, value: str) -> None:
+        self._backend.range = value
+
+    def _on_blinker_left(self, active: bool) -> None:
+        self._backend.blinkerLeft = active
+        self._backend.leftTurnActive = active
+
+    def _on_blinker_right(self, active: bool) -> None:
+        self._backend.blinkerRight = active
+        self._backend.rightTurnActive = active

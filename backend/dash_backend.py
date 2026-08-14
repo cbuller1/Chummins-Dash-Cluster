@@ -20,6 +20,10 @@ class DashBackend(QObject):
     rangeChanged = Signal()
     boostChanged = Signal()
     tpsChanged = Signal()
+    blinkerLeftChanged = Signal()
+    blinkerRightChanged = Signal()
+    leftTurnActiveChanged = Signal()
+    rightTurnActiveChanged = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -32,6 +36,10 @@ class DashBackend(QObject):
         self._range: str = "2hi"  # "2hi" | "4hi" | "4lo" | "n"
         self._boost: float = 0.0   # turbo boost pressure in psi
         self._tps: float = 0.0     # throttle position 0–100 %
+        self._blinkerLeft: bool = False
+        self._blinkerRight: bool = False
+        self._leftTurnActive: bool = False
+        self._rightTurnActive: bool = False
 
     # ------------------------------------------------------------------
     # rpm
@@ -158,3 +166,59 @@ class DashBackend(QObject):
         if self._tps != value:
             self._tps = value
             self.tpsChanged.emit()
+
+    # ------------------------------------------------------------------
+    # blinkerLeft
+    # ------------------------------------------------------------------
+
+    @Property(bool, notify=blinkerLeftChanged)
+    def blinkerLeft(self) -> bool:
+        return self._blinkerLeft
+
+    @blinkerLeft.setter
+    def blinkerLeft(self, value: bool) -> None:
+        if self._blinkerLeft != value:
+            self._blinkerLeft = value
+            self.blinkerLeftChanged.emit()
+
+    # ------------------------------------------------------------------
+    # blinkerRight
+    # ------------------------------------------------------------------
+
+    @Property(bool, notify=blinkerRightChanged)
+    def blinkerRight(self) -> bool:
+        return self._blinkerRight
+
+    @blinkerRight.setter
+    def blinkerRight(self, value: bool) -> None:
+        if self._blinkerRight != value:
+            self._blinkerRight = value
+            self.blinkerRightChanged.emit()
+
+    # ------------------------------------------------------------------
+    # leftTurnActive (QML-facing alias for blinkerLeft)
+    # ------------------------------------------------------------------
+
+    @Property(bool, notify=leftTurnActiveChanged)
+    def leftTurnActive(self) -> bool:
+        return self._leftTurnActive
+
+    @leftTurnActive.setter
+    def leftTurnActive(self, value: bool) -> None:
+        if self._leftTurnActive != value:
+            self._leftTurnActive = value
+            self.leftTurnActiveChanged.emit()
+
+    # ------------------------------------------------------------------
+    # rightTurnActive (QML-facing alias for blinkerRight)
+    # ------------------------------------------------------------------
+
+    @Property(bool, notify=rightTurnActiveChanged)
+    def rightTurnActive(self) -> bool:
+        return self._rightTurnActive
+
+    @rightTurnActive.setter
+    def rightTurnActive(self, value: bool) -> None:
+        if self._rightTurnActive != value:
+            self._rightTurnActive = value
+            self.rightTurnActiveChanged.emit()

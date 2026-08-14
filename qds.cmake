@@ -11,6 +11,8 @@ qt6_add_resources(${CMAKE_PROJECT_NAME} MainResource
     VERSION 1.0
     FILES 
         ".vscode/settings.json"
+        ".vscode/c_cpp_properties.json"
+        "firmware_waveshare/.pio/libdeps/waveshare-esp32s3-poe/ArduinoJson/library.json"
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE

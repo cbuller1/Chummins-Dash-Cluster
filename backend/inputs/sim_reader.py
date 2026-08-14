@@ -107,6 +107,12 @@ class SimReader:
             tps=tps,
         )
 
+        # Blinkers: flash at ~1.5 Hz; left active first third of cycle, right active last third
+        flash = int(self._elapsed * 1.5) % 2 == 0
+        cycle_phase = (self._elapsed % CYCLE_PERIOD) / CYCLE_PERIOD
+        self._backend.leftTurnActive  = flash and cycle_phase < 0.33
+        self._backend.rightTurnActive = flash and cycle_phase > 0.67
+
         # Transfer case: advance index every _TC_CHANGE_INTERVAL_S seconds
         tc_index = int(self._elapsed / _TC_CHANGE_INTERVAL_S) % len(_TRANSFER_CASE_SEQUENCE)
         if tc_index != self._tc_index:

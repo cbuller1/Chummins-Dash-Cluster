@@ -91,7 +91,7 @@ Item {
 
                     color: "#B8B8B4"
 
-                    font.pixelSize: 10
+                    font.pixelSize: 14
                     font.bold: true
                     font.letterSpacing: 1.0
                 }
@@ -107,7 +107,7 @@ Item {
 
                     color: "#48D978"
 
-                    font.pixelSize: 13
+                    font.pixelSize: 16
                     font.bold: true
                     font.letterSpacing: 0.4
                 }
@@ -144,7 +144,7 @@ Item {
 
                     color: "#B8B8B4"
 
-                    font.pixelSize: 10
+                    font.pixelSize: 14
                     font.bold: true
                     font.letterSpacing: 1.0
                 }
@@ -160,7 +160,7 @@ Item {
 
                     color: "#48D978"
 
-                    font.pixelSize: 13
+                    font.pixelSize: 16
                     font.bold: true
                     font.letterSpacing: 0.4
                 }

@@ -19,6 +19,8 @@ qt6_add_qml_module(Chummins_DashContent
         "Speedometer.ui.qml"
         "Tachometer.ui.qml"
         "EngineSensors.ui.qml"
+        "LeftTurnIndicator.ui.qml"
+        "RightTurnIndicator.ui.qml"
     RESOURCES
         "images/chummins_bg.png"
         "images/chummins_bg_light.png"

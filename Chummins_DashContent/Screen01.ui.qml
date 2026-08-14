@@ -38,9 +38,9 @@ Rectangle {
 
         EngineSensors {
             id: engineSensors
-            x: 266
+            x: 250
             y: 436
-            width: 269
+            width: 303
             height: 44
             boostPsi: backend.boost
             throttlePosition: backend.tps
@@ -83,11 +83,34 @@ Rectangle {
 
     Image {
         id: image1
-        x: 301
+        x: 303
         y: -29
         width: 189
         height: 206
         source: "images/Cummins_logo.svg"
         fillMode: Image.PreserveAspectFit
+    }
+    LeftTurnIndicator {
+        id: leftTurnIndicator
+
+        x: 307
+        y: 60
+
+        width: 42
+        height: 28
+
+        active: backend.leftTurnActive
+    }
+
+    RightTurnIndicator {
+        id: rightTurnIndicator
+
+        x: 441
+        y: 60
+
+        width: 42
+        height: 28
+
+        active: backend.rightTurnActive
     }
 }

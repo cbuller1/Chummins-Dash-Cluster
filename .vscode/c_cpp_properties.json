@@ -1,0 +1,32 @@
+{
+    "configurations": [
+        {
+            "name": "ESP32-S3 (PlatformIO)",
+            "compilerPath": "${env:USERPROFILE}/.platformio/packages/toolchain-xtensa-esp-elf/bin/xtensa-esp32s3-elf-g++.exe",
+            "compilerArgs": ["-std=gnu++17"],
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "gcc-x64",
+            "compileCommands": "${workspaceFolder}/firmware_waveshare/.pio/build/waveshare-esp32s3-poe/compile_commands.json",
+            "includePath": [
+                "${workspaceFolder}/firmware_waveshare/src/**",
+                "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/cores/esp32/**",
+                "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/libraries/**",
+                "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32s3/include/**",
+                "${env:USERPROFILE}/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp32s3-elf/include/**",
+                "${workspaceFolder}/firmware_waveshare/.pio/libdeps/waveshare-esp32s3-poe/**"
+            ],
+            "defines": [
+                "ARDUINO=10816",
+                "ARDUINO_ARCH_ESP32",
+                "ESP32",
+                "ESP_PLATFORM",
+                "BOARD_HAS_PSRAM",
+                "ARDUINO_USB_MODE=1",
+                "ARDUINO_USB_CDC_ON_BOOT=1",
+                "CONFIG_IDF_TARGET_ESP32S3"
+            ]
+        }
+    ],
+    "version": 4
+}

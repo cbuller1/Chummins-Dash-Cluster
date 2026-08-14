@@ -1,5 +1,6 @@
 <RCC>
     <qresource>
+        <file>.vscode/c_cpp_properties.json</file>
         <file>.vscode/settings.json</file>
         <file>Chummins_Dash.qmlproject</file>
         <file>Chummins_DashContent/App.qml</file>
@@ -14,12 +15,15 @@
         <file>Chummins_DashContent/images/gauge_bezel.svg</file>
         <file>Chummins_DashContent/images/glass.svg</file>
         <file>Chummins_DashContent/images/glossy-transparent-vector-glass-clear-260nw-2414459803.webp</file>
+        <file>Chummins_DashContent/LeftTurnIndicator.ui.qml</file>
         <file>Chummins_DashContent/LockupStatus.ui.qml</file>
         <file>Chummins_DashContent/OverdriveStatus.ui.qml</file>
         <file>Chummins_DashContent/RangeIndicator.ui.qml</file>
+        <file>Chummins_DashContent/RightTurnIndicator.ui.qml</file>
         <file>Chummins_DashContent/Screen01.ui.qml</file>
         <file>Chummins_DashContent/Speedometer.ui.qml</file>
         <file>Chummins_DashContent/Tachometer.ui.qml</file>
+        <file>firmware_waveshare/.pio/libdeps/waveshare-esp32s3-poe/ArduinoJson/library.json</file>
         <file>qml_imports/QtQuick/Studio/Components/qmldir</file>
         <file>qtquickcontrols2.conf</file>
     </qresource>
