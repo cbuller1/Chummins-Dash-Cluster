@@ -11,97 +11,27 @@ PROJECT_ROOT = Path(__file__).parent
 os.environ["QT_QUICK_CONTROLS_CONF"] = str(PROJECT_ROOT / "qtquickcontrols2.conf")
 
 from PySide6.QtWidgets import QApplication
-from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterSingletonType
-from PySide6.QtCore import QUrl, QObject, Signal, Property
+from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtCore import QUrl
+
+from backend import DashBackend
+from backend.inputs.sim_reader import SimReader
 
 
-class DashBackend(QObject):
-    """
-    Exposes dashboard data to QML.
-    Set these properties from your data source (CAN bus, serial, etc.).
-    In QML, access via: backend.rpm, backend.speed, etc.
-    """
-
-    rpmChanged = Signal()
-    speedChanged = Signal()
-    driveStateChanged = Signal()
-    overdriveActiveChanged = Signal()
-    lockupActiveChanged = Signal()
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self._rpm = 1500.0
-        self._speed = 50.0
-        self._driveState = "power"   # "normal", "lugging", "power", "redline"
-        self._overdriveActive = True
-        self._lockupActive = True
-
-    @Property(float, notify=rpmChanged)
-    def rpm(self):
-        return self._rpm
-
-    @rpm.setter
-    def rpm(self, value):
-        if self._rpm != value:
-            self._rpm = value
-            self.rpmChanged.emit()
-
-    @Property(float, notify=speedChanged)
-    def speed(self):
-        return self._speed
-
-    @speed.setter
-    def speed(self, value):
-        if self._speed != value:
-            self._speed = value
-            self.speedChanged.emit()
-
-    @Property(str, notify=driveStateChanged)
-    def driveState(self):
-        return self._driveState
-
-    @driveState.setter
-    def driveState(self, value):
-        if self._driveState != value:
-            self._driveState = value
-            self.driveStateChanged.emit()
-
-    @Property(bool, notify=overdriveActiveChanged)
-    def overdriveActive(self):
-        return self._overdriveActive
-
-    @overdriveActive.setter
-    def overdriveActive(self, value):
-        if self._overdriveActive != value:
-            self._overdriveActive = value
-            self.overdriveActiveChanged.emit()
-
-    @Property(bool, notify=lockupActiveChanged)
-    def lockupActive(self):
-        return self._lockupActive
-
-    @lockupActive.setter
-    def lockupActive(self, value):
-        if self._lockupActive != value:
-            self._lockupActive = value
-            self.lockupActiveChanged.emit()
-
-
-def main():
+def main() -> None:
     app = QApplication(sys.argv)
 
     backend = DashBackend()
 
+    # --- Simulation (disable when using real hardware) ---------------
+    sim = SimReader(backend)
+    sim.start()
+    # ----------------------------------------------------------------
+
     engine = QQmlApplicationEngine()
-
-    # QtQuick.Studio.Components is not bundled with PySide6; use local shim
     engine.addImportPath(str(PROJECT_ROOT / "qml_imports"))
-
-    # Expose the backend object to all QML files under the name "backend"
     engine.rootContext().setContextProperty("backend", backend)
-
-    qml_file = PROJECT_ROOT / "Chummins_DashContent" / "App.qml"
-    engine.load(QUrl.fromLocalFile(str(qml_file)))
+    engine.load(QUrl.fromLocalFile(str(PROJECT_ROOT / "Chummins_DashContent" / "App.qml")))
 
     if not engine.rootObjects():
         sys.exit(-1)

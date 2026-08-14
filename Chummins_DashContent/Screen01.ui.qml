@@ -41,7 +41,7 @@ Rectangle {
         width: 290
         height: 290
 
-        rpm: 1500
+        rpm: backend.rpm
     }
 
     DriveStatus {
@@ -53,12 +53,12 @@ Rectangle {
         height: 104
 
         // Transmission states
-        overdriveActive: true
-        lockupActive: true
+        overdriveActive: backend.overdriveActive
+        lockupActive: backend.lockupActive
 
         // Engine operating state
         // power, normal, lugging, redline
-        driveState: "power"
+        driveState: backend.driveState
     }
 
     Speedometer {
@@ -67,7 +67,7 @@ Rectangle {
         y: 24
         width: 250
         height: 250
-        speed: 50
+        speed: backend.speed
     }
 
     Image {
@@ -86,8 +86,8 @@ Rectangle {
         y: 376
         width: 210
         height: 104
-        overdriveActive: true
-        lockupActive: true
-        driveState: "power"
+        overdriveActive: backend.overdriveActive
+        lockupActive: backend.lockupActive
+        driveState: backend.driveState
     }
 }
