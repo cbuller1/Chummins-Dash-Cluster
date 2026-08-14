@@ -17,7 +17,9 @@ class DashBackend(QObject):
     driveStateChanged = Signal()
     overdriveActiveChanged = Signal()
     lockupActiveChanged = Signal()
-    transferCaseChanged = Signal()
+    rangeChanged = Signal()
+    boostChanged = Signal()
+    tpsChanged = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -27,7 +29,9 @@ class DashBackend(QObject):
         self._driveState: str = "normal"  # "normal" | "lugging" | "power" | "redline"
         self._overdriveActive: bool = False
         self._lockupActive: bool = False
-        self._transferCase: str = "2hi"  # "2hi" | "4hi" | "4lo" | "N"
+        self._range: str = "2hi"  # "2hi" | "4hi" | "4lo" | "n"
+        self._boost: float = 0.0   # turbo boost pressure in psi
+        self._tps: float = 0.0     # throttle position 0–100 %
 
     # ------------------------------------------------------------------
     # rpm
@@ -114,15 +118,43 @@ class DashBackend(QObject):
             self.lockupActiveChanged.emit()
 
     # ------------------------------------------------------------------
-    # transferCase
+    # range
     # ------------------------------------------------------------------
 
-    @Property(str, notify=transferCaseChanged)
-    def transferCase(self) -> str:
-        return self._transferCase
+    @Property(str, notify=rangeChanged)
+    def range(self) -> str:
+        return self._range
 
-    @transferCase.setter
-    def transferCase(self, value: str) -> None:
-        if self._transferCase != value:
-            self._transferCase = value
-            self.transferCaseChanged.emit()
+    @range.setter
+    def range(self, value: str) -> None:
+        if self._range != value:
+            self._range = value
+            self.rangeChanged.emit()
+
+    # ------------------------------------------------------------------
+    # boost
+    # ------------------------------------------------------------------
+
+    @Property(float, notify=boostChanged)
+    def boost(self) -> float:
+        return self._boost
+
+    @boost.setter
+    def boost(self, value: float) -> None:
+        if self._boost != value:
+            self._boost = value
+            self.boostChanged.emit()
+
+    # ------------------------------------------------------------------
+    # tps
+    # ------------------------------------------------------------------
+
+    @Property(float, notify=tpsChanged)
+    def tps(self) -> float:
+        return self._tps
+
+    @tps.setter
+    def tps(self, value: float) -> None:
+        if self._tps != value:
+            self._tps = value
+            self.tpsChanged.emit()

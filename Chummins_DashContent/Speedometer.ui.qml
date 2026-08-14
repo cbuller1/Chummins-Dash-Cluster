@@ -786,7 +786,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
 
             anchors.top: needleHubOuter.bottom
-            anchors.topMargin: 45
+            anchors.topMargin: 34
 
             text: Math.round(root.speed)
 
@@ -796,6 +796,13 @@ Item {
             font.bold: true
 
             anchors.horizontalCenterOffset: -1
+        }
+
+        OverdriveStatus {
+            id: overdriveStatus
+            x: 129
+            y: 252
+            active: backend.overdriveActive
         }
 
         // ==================================================

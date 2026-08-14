@@ -52,8 +52,8 @@ _GEAR_SPEED_FACTOR: dict[int, float] = {
 # Minimum RPM to be in each gear (index = gear - 1)
 _UPSHIFT_RPM: list[float] = [0, 1200, 1800, 2300]
 
-_TRANSFER_CASE_SEQUENCE: list[str] = ["2hi", "4hi", "4lo", "N"]
-_TC_CHANGE_INTERVAL_S: float = 8.0  # seconds between transfer case changes
+_TRANSFER_CASE_SEQUENCE: list[str] = ["2hi", "4hi", "4lo", "n"]
+_TC_CHANGE_INTERVAL_S: float = CYCLE_PERIOD  # one range change per drive cycle
 
 
 class SimReader:
@@ -75,6 +75,7 @@ class SimReader:
 
     def start(self) -> None:
         self._elapsed = 0.0
+        self._tc_index = 0
         self._timer.start()
 
     def stop(self) -> None:
@@ -88,25 +89,29 @@ class SimReader:
         dt = TICK_MS / 1000.0
         self._elapsed += dt
 
-        rpm, speed, gear, lockup, overdrive = self._simulate_drivetrain(self._elapsed)
+        rpm, speed, gear, lockup, overdrive, boost, tps = self._simulate_drivetrain(self._elapsed)
 
         self._backend.rpm = rpm
         self._backend.speed = speed
         self._backend.gear = gear
         self._backend.lockupActive = lockup
         self._backend.overdriveActive = overdrive
+        self._backend.boost = boost
+        self._backend.tps = tps
         self._backend.driveState = self._calc.calculate(
             rpm=rpm,
             gear=gear,
             lockup_active=lockup,
             overdrive_active=overdrive,
+            boost=boost,
+            tps=tps,
         )
 
         # Transfer case: advance index every _TC_CHANGE_INTERVAL_S seconds
         tc_index = int(self._elapsed / _TC_CHANGE_INTERVAL_S) % len(_TRANSFER_CASE_SEQUENCE)
         if tc_index != self._tc_index:
             self._tc_index = tc_index
-            self._backend.transferCase = _TRANSFER_CASE_SEQUENCE[self._tc_index]
+            self._backend.range = _TRANSFER_CASE_SEQUENCE[self._tc_index]
 
     # ------------------------------------------------------------------
     # Drivetrain simulation
@@ -114,9 +119,9 @@ class SimReader:
 
     def _simulate_drivetrain(
         self, t: float
-    ) -> tuple[float, float, int, bool, bool]:
+    ) -> tuple[float, float, int, bool, bool, float, float]:
         """
-        Return (rpm, speed_kph, gear, lockup_active, overdrive_active)
+        Return (rpm, speed_mph, gear, lockup_active, overdrive_active, boost_psi, tps_pct)
         for simulation time *t* (seconds).
         """
         # Smooth 0→1→0 envelope over the cycle using a sine arch
@@ -130,13 +135,20 @@ class SimReader:
 
         speed = rpm * _GEAR_SPEED_FACTOR.get(gear, 0.05)
 
-        # Torque converter lockup: engaged in gear 3+ above 1200 RPM
-        lockup = gear >= 3 and rpm > 1200.0
-
         # Overdrive: gear 4 is the OD gear
         overdrive = gear == 4
 
-        return rpm, speed, gear, lockup, overdrive
+        # TPS rises 2× faster than RPM so demand is high while engine is still spooling
+        tps = min(100.0, envelope * 200.0)
+
+        # Simulates driver engaging manual lockup button under load
+        lockup = tps >= 50.0
+
+        # Boost: P7100 builds with RPM and fueling; 12V 6BT peaks ~22 psi
+        rpm_norm = max(0.0, (rpm - IDLE_RPM) / (MAX_RPM - IDLE_RPM))
+        boost = 22.0 * _ease_in_out(rpm_norm) * (tps / 100.0)
+
+        return rpm, speed, gear, lockup, overdrive, boost, tps
 
     @staticmethod
     def _rpm_to_gear(rpm: float) -> int:

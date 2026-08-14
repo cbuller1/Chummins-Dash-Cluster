@@ -21,22 +21,50 @@ Rectangle {
     Image {
         id: image
         x: 0
-        y: -24
+        y: 0
         width: 800
         height: 480
         source: "images/chummins_bg_light.png"
         fillMode: Image.PreserveAspectFit
+
+        RangeIndicator {
+            id: rangeIndicator1
+            x: 285
+            y: -3
+            width: 232
+            height: 36
+            range: backend.range
+        }
+
+        EngineSensors {
+            id: engineSensors
+            x: 266
+            y: 436
+            width: 269
+            height: 44
+            boostPsi: backend.boost
+            throttlePosition: backend.tps
+        }
     }
 
     StateGroup {
         id: newStateGroup
     }
 
+    DriveState {
+        id: driveStatus
+        driveState: backend.driveState
+        x: 316
+        y: 117
+        width: 179
+        height: 59
+    }
+
     Tachometer {
         id: tachometer
 
         x: 488
-        y: 4
+        y: 25
 
         width: 290
         height: 290
@@ -44,27 +72,10 @@ Rectangle {
         rpm: backend.rpm
     }
 
-    DriveStatus {
-        id: driveStatus
-
-        x: 586
-        y: 383
-        width: 210
-        height: 104
-
-        // Transmission states
-        overdriveActive: backend.overdriveActive
-        lockupActive: backend.lockupActive
-
-        // Engine operating state
-        // power, normal, lugging, redline
-        driveState: backend.driveState
-    }
-
     Speedometer {
         id: speedometer
         x: 44
-        y: 24
+        y: 45
         width: 250
         height: 250
         speed: backend.speed
@@ -72,22 +83,11 @@ Rectangle {
 
     Image {
         id: image1
-        x: 256
-        y: -76
-        width: 284
-        height: 289
+        x: 301
+        y: -29
+        width: 189
+        height: 206
         source: "images/Cummins_logo.svg"
         fillMode: Image.PreserveAspectFit
-    }
-
-    DriveStatus {
-        id: driveStatus1
-        x: 8
-        y: 376
-        width: 210
-        height: 104
-        overdriveActive: backend.overdriveActive
-        lockupActive: backend.lockupActive
-        driveState: backend.driveState
     }
 }

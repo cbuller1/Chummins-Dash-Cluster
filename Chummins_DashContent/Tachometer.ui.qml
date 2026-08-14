@@ -1087,6 +1087,13 @@ Item {
             }
         }
 
+        LockupStatus {
+            id: lockupStatus
+            x: 121
+            y: 249
+            active: backend.lockupActive
+        }
+
         // ==================================================
         // CENTER HUB
         // ==================================================
@@ -1153,7 +1160,7 @@ Item {
 
             anchors.horizontalCenter: parent.horizontalCenter
 
-            y: 205
+            y: 195
 
             text: Math.round(root.rpm)
 

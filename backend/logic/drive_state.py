@@ -1,15 +1,12 @@
 """
-Drive state calculation logic.
+Drive state logic for a 1st-gen 12-valve Cummins 5.9 6BT.
 
-Determines the current drive state label shown on the dashboard:
-
-    "normal"   — engine is operating in a healthy, efficient range
-    "power"    — engine is in the upper power band (high demand or passing)
-    "lugging"  — engine RPM is too low for the current gear/load
-    "redline"  — engine is approaching or at the maximum safe RPM
-
-The thresholds below are reasonable defaults for a diesel engine.
-Tune RPM_* values to match the specific engine's power curve.
+States (highest to lowest priority):
+    "redline"   — RPM at or above governor; ease off immediately
+    "overboost" — boost beyond safe threshold; risk of head gasket failure
+    "lugging"   — low RPM under high load or with TC locked; severe stress
+    "power"     — healthy power band with boost building
+    "normal"    — efficient cruise
 """
 
 from __future__ import annotations
@@ -17,34 +14,25 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-# ------------------------------------------------------------------
-# Tuneable thresholds
-# ------------------------------------------------------------------
-
 @dataclass
 class DriveStateThresholds:
-    """RPM-based thresholds used by DriveStateCalculator."""
-    lug_max: float = 1100.0    # RPM at or below this → "lugging" (if under load)
-    normal_max: float = 1800.0 # RPM at or below this → "normal"
-    power_max: float = 2400.0  # RPM at or below this → "power"
-    redline_min: float = 2400.0  # RPM at or above this → "redline"
+    """12V Cummins 5.9 6BT defaults — tune to your P7100 pump."""
+    # Lugging with TC locked (manual lockup engaged at low RPM)
+    lug_rpm_max: float = 1300.0        # RPM ceiling when lockup is on
+    lug_tps_min_lockup: float = 25.0   # minimum TPS to care about with lockup on
+    # Lugging without lockup (extreme stall-level condition only)
+    lug_extreme_rpm: float = 900.0     # RPM at which unlocked lug is flagged
+    lug_extreme_tps: float = 90.0      # TPS% required to flag unlocked lug
+    # Power band
+    power_rpm_min: float = 1500.0
+    power_tps_min: float = 0.0
+    power_boost_min: float = 0.0
+    # Limits
+    redline_rpm_min: float = 2500.0
+    overboost_psi_min: float = 25.0
 
-
-# ------------------------------------------------------------------
-# Calculator
-# ------------------------------------------------------------------
 
 class DriveStateCalculator:
-    """
-    Computes the drive state string from live engine / transmission data.
-
-    Usage
-    -----
-    calc = DriveStateCalculator()
-    state = calc.calculate(rpm=1400, gear=3, lockup_active=True)
-    backend.driveState = state
-    """
-
     def __init__(self, thresholds: DriveStateThresholds | None = None) -> None:
         self.thresholds = thresholds or DriveStateThresholds()
 
@@ -54,39 +42,34 @@ class DriveStateCalculator:
         gear: int,
         lockup_active: bool,
         overdrive_active: bool = False,
+        boost: float = 0.0,
+        tps: float = 0.0,
     ) -> str:
-        """
-        Return the drive state label for the current engine/transmission state.
-
-        Parameters
-        ----------
-        rpm:
-            Current engine RPM.
-        gear:
-            Currently selected gear (0 = neutral).
-        lockup_active:
-            Whether the torque converter lockup is engaged.
-        overdrive_active:
-            Whether overdrive is currently engaged.
-        """
         t = self.thresholds
 
-        # Redline — always highest priority regardless of gear
-        if rpm >= t.redline_min:
+        # 1 — Redline
+        if rpm >= t.redline_rpm_min:
             return "redline"
 
-        # Neutral — no meaningful drive state
+        # 2 — Overboost (dangerous at any RPM)
+        if boost >= t.overboost_psi_min:
+            return "overboost"
+
         if gear == 0:
             return "normal"
 
-        # Lugging — RPM too low for the load; worse in higher gears
-        # Also flag if lockup is active at very low RPM (can't slip to compensate)
-        if rpm <= t.lug_max:
-            if gear >= 3 or lockup_active:
+        # 3 — Lugging
+        #   With lockup on: converter can't slip, so any meaningful load at low RPM is dangerous
+        #   Without lockup: only flag at extreme near-stall conditions
+        if lockup_active:
+            if rpm <= t.lug_rpm_max and tps >= t.lug_tps_min_lockup:
+                return "lugging"
+        else:
+            if rpm <= t.lug_extreme_rpm and tps >= t.lug_extreme_tps:
                 return "lugging"
 
-        # Power band
-        if rpm > t.normal_max:
+        # 4 — Power band
+        if rpm >= t.power_rpm_min and tps >= t.power_tps_min and boost >= t.power_boost_min:
             return "power"
 
         return "normal"
