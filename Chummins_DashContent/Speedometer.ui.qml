@@ -7,14 +7,19 @@ Item {
     // ==============================
     // PUBLIC PROPERTIES
     // ==============================
-    property real speed: 35
+    property real speed: 50
     property real maximumSpeed: 100
 
-    width: 300
-    height: 300
+    // ==============================
+    // COMPLETE GAUGE SIZE
+    // Same as tachometer
+    // ==============================
+    width: 360
+    height: 360
 
     // ==============================
     // GAUGE CONTENT
+    // Original gauge remains 300x300
     // ==============================
     Item {
         id: gaugeContent
@@ -22,7 +27,45 @@ Item {
         width: 300
         height: 300
         anchors.centerIn: parent
-        scale: root.width / 300
+
+        // ==========================
+        // GAUGE FACE / BEZEL
+        // Same positioning as tach
+        // ==========================
+        Image {
+            id: bezel
+            x: -20
+            y: -20
+
+            width: 340
+            height: 340
+
+            anchors.centerIn: parent
+
+            source: "images/gauge_bezel.svg"
+
+            anchors.verticalCenterOffset: 4
+            anchors.horizontalCenterOffset: 0
+
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            mipmap: true
+
+            z: 0
+
+            Image {
+                id: image
+
+                x: -6
+                y: -6
+
+                width: 350
+                height: 350
+
+                source: "images/gauge_bezel.svg"
+                fillMode: Image.PreserveAspectFit
+            }
+        }
 
         // ==========================
         // GAUGE FACE
@@ -35,15 +78,16 @@ Item {
             anchors.centerIn: parent
 
             radius: 146
-            color: "#080808"
 
-            border.width: 5
-            border.color: "#404040"
+            // AUTOMETER WHITE FACE
+            color: "#F2F1EC"
+
+            border.width: 10
+            border.color: "#92928F"
         }
 
         // ==================================================
-        // OUTER WHITE SCALE BAND
-        // Same 270-degree sweep as tachometer
+        // OUTER SPEED SCALE BAND
         // 0 MPH   = 225°
         // 50 MPH  = 360°
         // 100 MPH = 495°
@@ -59,7 +103,7 @@ Item {
             end: 225
 
             strokeWidth: 8
-            strokeColor: "#F5F7F7"
+            strokeColor: "#343434"
             fillColor: "transparent"
         }
 
@@ -77,7 +121,7 @@ Item {
             end: 225
 
             strokeWidth: 2
-            strokeColor: "#606060"
+            strokeColor: "#A0A09C"
             fillColor: "transparent"
         }
 
@@ -87,7 +131,6 @@ Item {
         // 0 through 100 MPH
         // One tick every 5 MPH
         // Major tick every 10 MPH
-        // 270° / 20 intervals = 13.5° per 5 MPH
         // ==================================================
         Item {
             id: tickMarks
@@ -106,8 +149,9 @@ Item {
                     width: 3
                     height: 14
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#202020"
                 }
             }
 
@@ -121,8 +165,9 @@ Item {
                     width: 2
                     height: 8
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#606060"
                 }
             }
 
@@ -136,8 +181,9 @@ Item {
                     width: 3
                     height: 14
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#202020"
                 }
             }
 
@@ -151,8 +197,9 @@ Item {
                     width: 2
                     height: 8
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#606060"
                 }
             }
 
@@ -166,8 +213,9 @@ Item {
                     width: 3
                     height: 14
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#202020"
                 }
             }
 
@@ -181,8 +229,9 @@ Item {
                     width: 2
                     height: 8
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#606060"
                 }
             }
 
@@ -196,8 +245,9 @@ Item {
                     width: 3
                     height: 14
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#202020"
                 }
             }
 
@@ -211,8 +261,9 @@ Item {
                     width: 2
                     height: 8
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#606060"
                 }
             }
 
@@ -226,8 +277,9 @@ Item {
                     width: 3
                     height: 14
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#202020"
                 }
             }
 
@@ -241,8 +293,9 @@ Item {
                     width: 2
                     height: 8
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#606060"
                 }
             }
 
@@ -256,8 +309,9 @@ Item {
                     width: 3
                     height: 14
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#202020"
                 }
             }
 
@@ -271,8 +325,9 @@ Item {
                     width: 2
                     height: 8
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#606060"
                 }
             }
 
@@ -286,8 +341,9 @@ Item {
                     width: 3
                     height: 14
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#202020"
                 }
             }
 
@@ -301,8 +357,9 @@ Item {
                     width: 2
                     height: 8
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#606060"
                 }
             }
 
@@ -316,8 +373,9 @@ Item {
                     width: 3
                     height: 14
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#202020"
                 }
             }
 
@@ -331,8 +389,9 @@ Item {
                     width: 2
                     height: 8
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#606060"
                 }
             }
 
@@ -346,8 +405,9 @@ Item {
                     width: 3
                     height: 14
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#202020"
                 }
             }
 
@@ -361,8 +421,9 @@ Item {
                     width: 2
                     height: 8
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#606060"
                 }
             }
 
@@ -376,8 +437,9 @@ Item {
                     width: 3
                     height: 14
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#202020"
                 }
             }
 
@@ -391,8 +453,9 @@ Item {
                     width: 2
                     height: 8
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#606060"
                 }
             }
 
@@ -406,30 +469,32 @@ Item {
                     width: 3
                     height: 14
                     y: 25
+
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#202020"
                 }
             }
         }
 
         // ==================================================
         // SPEED SCALE NUMBERS
-        // Every 10 MPH
-        // All labels follow the same circular radius
         // ==================================================
 
         // 0 MPH
         Text {
             text: "0"
+
             width: 32
             height: 20
+
             x: 61
             y: 215
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#FFFFFF"
+            color: "#181818"
+
             font.pixelSize: 12
             font.bold: true
         }
@@ -437,15 +502,18 @@ Item {
         // 10 MPH
         Text {
             text: "10"
+
             width: 32
             height: 20
+
             x: 36
             y: 171
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#FFFFFF"
+            color: "#181818"
+
             font.pixelSize: 12
             font.bold: true
         }
@@ -453,15 +521,18 @@ Item {
         // 20 MPH
         Text {
             text: "20"
+
             width: 32
             height: 20
+
             x: 34
             y: 124
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#FFFFFF"
+            color: "#181818"
+
             font.pixelSize: 12
             font.bold: true
         }
@@ -469,15 +540,18 @@ Item {
         // 30 MPH
         Text {
             text: "30"
+
             width: 32
             height: 20
+
             x: 53
             y: 78
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#FFFFFF"
+            color: "#181818"
+
             font.pixelSize: 12
             font.bold: true
         }
@@ -485,15 +559,18 @@ Item {
         // 40 MPH
         Text {
             text: "40"
+
             width: 32
             height: 20
+
             x: 87
             y: 49
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#FFFFFF"
+            color: "#181818"
+
             font.pixelSize: 12
             font.bold: true
         }
@@ -501,15 +578,18 @@ Item {
         // 50 MPH
         Text {
             text: "50"
+
             width: 32
             height: 20
+
             x: 134
             y: 37
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#FFFFFF"
+            color: "#181818"
+
             font.pixelSize: 12
             font.bold: true
         }
@@ -517,15 +597,18 @@ Item {
         // 60 MPH
         Text {
             text: "60"
+
             width: 32
             height: 20
+
             x: 181
             y: 49
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#FFFFFF"
+            color: "#181818"
+
             font.pixelSize: 12
             font.bold: true
         }
@@ -533,15 +616,18 @@ Item {
         // 70 MPH
         Text {
             text: "70"
+
             width: 32
             height: 20
+
             x: 216
             y: 80
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#FFFFFF"
+            color: "#181818"
+
             font.pixelSize: 12
             font.bold: true
         }
@@ -549,15 +635,18 @@ Item {
         // 80 MPH
         Text {
             text: "80"
+
             width: 32
             height: 20
+
             x: 233
             y: 123
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#FFFFFF"
+            color: "#181818"
+
             font.pixelSize: 12
             font.bold: true
         }
@@ -565,15 +654,18 @@ Item {
         // 90 MPH
         Text {
             text: "90"
+
             width: 32
             height: 20
+
             x: 230
             y: 172
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#FFFFFF"
+            color: "#181818"
+
             font.pixelSize: 12
             font.bold: true
         }
@@ -581,15 +673,18 @@ Item {
         // 100 MPH
         Text {
             text: "100"
+
             width: 36
             height: 20
+
             x: 201
             y: 210
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#FFFFFF"
+            color: "#181818"
+
             font.pixelSize: 12
             font.bold: true
         }
@@ -600,11 +695,26 @@ Item {
         // 50 MPH  =    0°
         // 100 MPH = +135°
         // ==================================================
+        Text {
+            id: gaugeBrand
+            y: 97
+            color: "#000000"
+            text: "K/30"
+            font.family: "Roboto Condensed"
+            font.pixelSize: 16
+            font.weight: Font.Bold
+            font.capitalization: Font.AllUppercase
+            font.letterSpacing: 1.2
+            anchors.horizontalCenterOffset: 0
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
         Item {
             id: needleAssembly
 
             width: 300
             height: 300
+
             anchors.centerIn: parent
 
             rotation: -135 + (270 * Math.min(
@@ -620,14 +730,16 @@ Item {
             Rectangle {
                 id: needle
 
-                width: 4
-                height: 128
+                width: 8
+                height: 149
 
                 anchors.horizontalCenter: parent.horizontalCenter
+
                 y: 27
 
                 radius: 6
-                color: "#707070"
+
+                color: "#FF4500"
             }
         }
 
@@ -637,15 +749,32 @@ Item {
         Rectangle {
             id: needleHubOuter
 
-            width: 20
-            height: 20
+            width: 22
+            height: 22
+
             anchors.centerIn: parent
 
-            radius: 10
-            color: "#303030"
+            radius: 11
 
-            border.width: 2
-            border.color: "#A0A0A0"
+            color: "#FF4500"
+
+            border.width: 0
+            border.color: "#606060"
+        }
+        Rectangle {
+            id: needleHubInner
+
+            width: 6
+            height: 6
+
+            anchors.centerIn: parent
+
+            radius: 4
+
+            color: "#000000"
+
+            border.width: 0
+            border.color: "#3D3D3B"
         }
 
         // ==================================================
@@ -655,15 +784,18 @@ Item {
             id: speedValue
 
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: needleHubOuter.bottom
-            anchors.topMargin: 41
 
-            color: "#F5F5F5"
+            anchors.top: needleHubOuter.bottom
+            anchors.topMargin: 45
+
             text: Math.round(root.speed)
 
+            color: "#181818"
+
             font.pixelSize: 45
-            anchors.horizontalCenterOffset: 0
             font.bold: true
+
+            anchors.horizontalCenterOffset: -1
         }
 
         // ==================================================
@@ -671,19 +803,21 @@ Item {
         // ==================================================
         Text {
             id: speedLabel
-            y: 168
+
+            y: 176
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.topMargin: -45
 
             text: "MPH"
 
-            color: "#909090"
+            color: "#000000"
 
             font.pixelSize: 12
-            anchors.horizontalCenterOffset: 1
             font.bold: true
             font.letterSpacing: 3
+
+            anchors.horizontalCenterOffset: 1
         }
     }
 }

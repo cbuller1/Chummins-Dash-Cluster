@@ -7,11 +7,15 @@ Item {
     // ==============================
     // PUBLIC PROPERTIES
     // ==============================
-    property real rpm: 1000
+    property real rpm: 1500
     property real maximumRpm: 3000
 
-    width: 300
-    height: 300
+    // ==============================
+    // COMPLETE GAUGE SIZE
+    // Same structure as Speedometer
+    // ==============================
+    width: 360
+    height: 360
 
     // ==============================
     // GAUGE CONTENT
@@ -22,10 +26,49 @@ Item {
         width: 300
         height: 300
         anchors.centerIn: parent
-        scale: root.width / 300
 
         // ==========================
-        // GAUGE FACE
+        // GAUGE FACE / BEZEL
+        // Same as working Speedometer
+        // ==========================
+        Image {
+            id: bezel
+
+            x: -20
+            y: -20
+
+            width: 340
+            height: 340
+
+            anchors.centerIn: parent
+
+            source: "images/gauge_bezel.svg"
+
+            anchors.verticalCenterOffset: 4
+            anchors.horizontalCenterOffset: 0
+
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            mipmap: true
+
+            z: 0
+
+            Image {
+                id: image
+
+                x: -6
+                y: -6
+
+                width: 350
+                height: 350
+
+                source: "images/gauge_bezel.svg"
+                fillMode: Image.PreserveAspectFit
+            }
+        }
+
+        // ==========================
+        // OUTER GAUGE FACE
         // ==========================
         Rectangle {
             id: gaugeFace
@@ -35,47 +78,62 @@ Item {
             anchors.centerIn: parent
 
             radius: 146
-            color: "#080808"
 
-            border.width: 5
-            border.color: "#404040"
+            color: "#F2F1EC"
+
+            border.width: 10
+            border.color: "#92928F"
         }
 
-        // ==================================================
-        // MODERN GRADIENT RPM BAND
-        // Total sweep = 270 degrees
-        // 100 RPM = 9 degrees
-        // 0 RPM    = 225°
-        // 500      = 270°
-        // 1000     = 315°
-        // 1400     = 351°
-        // 1500     = 360°
-        // 1600     = 369°
-        // 2000     = 405°
-        // 2200     = 423°
-        // 2500     = 450°
-        // 3000     = 495°
-        // 0-1400    COOL WHITE
-        // 1400-1500 WHITE -> GREEN
-        // 1500-2200 GREEN
-        // 2200-2500 YELLOW / AMBER
-        // 2500-3000 RED
-        // ==================================================
+        // ==========================
+        // RECESSED FACE LIP
+        // ==========================
+        Rectangle {
+            id: recessedFaceLip
 
-        // ==================================================
-        // 0 - 1400 RPM
-        // COOL WHITE
-        // ==================================================
-        ArcItem {
             width: 272
             height: 272
             anchors.centerIn: parent
 
+            radius: 136
+
+            color: "#6A6A67"
+        }
+
+        // ==========================
+        // INNER GAUGE FACE
+        // ==========================
+        Rectangle {
+            id: innerGaugeFace
+
+            width: 264
+            height: 264
+            anchors.centerIn: parent
+
+            radius: 132
+
+            color: "#F6F5F0"
+
+            border.width: 1
+            border.color: "#D8D7D2"
+        }
+
+        // ==================================================
+        // RPM COLOR BAND
+        // 0 RPM    = 225 degrees
+        // 1500 RPM = 360 degrees
+        // 3000 RPM = 495 degrees
+        // ==================================================
+
+        // 0 - 1400 RPM
+        ArcItem {
+            width: 272
+            height: 272
+            anchors.centerIn: parent
             begin: 243
             end: 225
-
-            strokeWidth: 8
-            strokeColor: "#F5F7F7"
+            strokeWidth: 6
+            strokeColor: "#3A3A3A"
             fillColor: "transparent"
         }
 
@@ -83,12 +141,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 261
             end: 243
-
-            strokeWidth: 8
-            strokeColor: "#F4F7F6"
+            strokeWidth: 6
+            strokeColor: "#3B3E3C"
             fillColor: "transparent"
         }
 
@@ -96,12 +152,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 279
             end: 261
-
-            strokeWidth: 8
-            strokeColor: "#F3F6F5"
+            strokeWidth: 6
+            strokeColor: "#3D423F"
             fillColor: "transparent"
         }
 
@@ -109,12 +163,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 297
             end: 279
-
-            strokeWidth: 8
-            strokeColor: "#F1F5F3"
+            strokeWidth: 6
+            strokeColor: "#3E4641"
             fillColor: "transparent"
         }
 
@@ -122,12 +174,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 315
             end: 297
-
-            strokeWidth: 8
-            strokeColor: "#EFF4F2"
+            strokeWidth: 6
+            strokeColor: "#404A43"
             fillColor: "transparent"
         }
 
@@ -135,12 +185,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 333
             end: 315
-
-            strokeWidth: 8
-            strokeColor: "#ECF3EF"
+            strokeWidth: 6
+            strokeColor: "#414F46"
             fillColor: "transparent"
         }
 
@@ -148,29 +196,22 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 351
             end: 333
-
-            strokeWidth: 8
-            strokeColor: "#E7F1EB"
+            strokeWidth: 6
+            strokeColor: "#435448"
             fillColor: "transparent"
         }
 
-        // ==================================================
-        // 1400 - 1500 RPM
-        // WHITE -> GREEN TRANSITION
-        // ==================================================
+        // 1400 - 1500 transition
         ArcItem {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 354
             end: 351
-
-            strokeWidth: 8
-            strokeColor: "#D1E9DC"
+            strokeWidth: 6
+            strokeColor: "#42604C"
             fillColor: "transparent"
         }
 
@@ -178,12 +219,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 357
             end: 354
-
-            strokeWidth: 8
-            strokeColor: "#A8DCC0"
+            strokeWidth: 6
+            strokeColor: "#417553"
             fillColor: "transparent"
         }
 
@@ -191,29 +230,22 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 360
             end: 357
-
-            strokeWidth: 8
-            strokeColor: "#72CFA0"
+            strokeWidth: 6
+            strokeColor: "#408B5C"
             fillColor: "transparent"
         }
 
-        // ==================================================
-        // 1500 - 2200 RPM
-        // GREEN
-        // ==================================================
+        // 1500 - 2200 POWER BAND
         ArcItem {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 369
             end: 360
-
-            strokeWidth: 8
-            strokeColor: "#4EC88A"
+            strokeWidth: 6
+            strokeColor: "#439F68"
             fillColor: "transparent"
         }
 
@@ -221,12 +253,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 378
             end: 369
-
-            strokeWidth: 8
-            strokeColor: "#42C27E"
+            strokeWidth: 6
+            strokeColor: "#409D66"
             fillColor: "transparent"
         }
 
@@ -234,12 +264,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 387
             end: 378
-
-            strokeWidth: 8
-            strokeColor: "#39BC75"
+            strokeWidth: 6
+            strokeColor: "#3F9F67"
             fillColor: "transparent"
         }
 
@@ -247,12 +275,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 396
             end: 387
-
-            strokeWidth: 8
-            strokeColor: "#35B66F"
+            strokeWidth: 6
+            strokeColor: "#3D9B63"
             fillColor: "transparent"
         }
 
@@ -260,12 +286,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 405
             end: 396
-
-            strokeWidth: 8
-            strokeColor: "#38B46B"
+            strokeWidth: 6
+            strokeColor: "#419D62"
             fillColor: "transparent"
         }
 
@@ -273,12 +297,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 414
             end: 405
-
-            strokeWidth: 8
-            strokeColor: "#43B768"
+            strokeWidth: 6
+            strokeColor: "#4B9F60"
             fillColor: "transparent"
         }
 
@@ -286,29 +308,22 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 423
             end: 414
-
-            strokeWidth: 8
-            strokeColor: "#5FBA62"
+            strokeWidth: 6
+            strokeColor: "#619F5C"
             fillColor: "transparent"
         }
 
-        // ==================================================
-        // 2200 - 2500 RPM
-        // YELLOW -> AMBER
-        // ==================================================
+        // 2200 - 2500 YELLOW / AMBER
         ArcItem {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 432
             end: 423
-
-            strokeWidth: 8
-            strokeColor: "#D9C84F"
+            strokeWidth: 6
+            strokeColor: "#C7B044"
             fillColor: "transparent"
         }
 
@@ -316,12 +331,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 441
             end: 432
-
-            strokeWidth: 8
-            strokeColor: "#E7B747"
+            strokeWidth: 6
+            strokeColor: "#D3A83E"
             fillColor: "transparent"
         }
 
@@ -329,29 +342,22 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 450
             end: 441
-
-            strokeWidth: 8
-            strokeColor: "#ED9D42"
+            strokeWidth: 6
+            strokeColor: "#D7953C"
             fillColor: "transparent"
         }
 
-        // ==================================================
-        // 2500 - 3000 RPM
-        // RED
-        // ==================================================
+        // 2500 - 3000 REDLINE
         ArcItem {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 459
             end: 450
-
-            strokeWidth: 8
-            strokeColor: "#EB6555"
+            strokeWidth: 6
+            strokeColor: "#D95A4A"
             fillColor: "transparent"
         }
 
@@ -359,12 +365,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 468
             end: 459
-
-            strokeWidth: 8
-            strokeColor: "#E95B50"
+            strokeWidth: 6
+            strokeColor: "#D65347"
             fillColor: "transparent"
         }
 
@@ -372,12 +376,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 477
             end: 468
-
-            strokeWidth: 8
-            strokeColor: "#E4514C"
+            strokeWidth: 6
+            strokeColor: "#D64A42"
             fillColor: "transparent"
         }
 
@@ -385,12 +387,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 486
             end: 477
-
-            strokeWidth: 8
-            strokeColor: "#DC494A"
+            strokeWidth: 6
+            strokeColor: "#CF453F"
             fillColor: "transparent"
         }
 
@@ -398,12 +398,10 @@ Item {
             width: 272
             height: 272
             anchors.centerIn: parent
-
             begin: 495
             end: 486
-
-            strokeWidth: 8
-            strokeColor: "#D34046"
+            strokeWidth: 6
+            strokeColor: "#C9403C"
             fillColor: "transparent"
         }
 
@@ -421,16 +419,15 @@ Item {
             end: 225
 
             strokeWidth: 2
-            strokeColor: "#606060"
+            strokeColor: "#A0A09C"
             fillColor: "transparent"
         }
 
         // ==================================================
         // TICK MARKS
-        // 31 marks total
-        // 0 through 3000 RPM
-        // One mark every 100 RPM
-        // Every 500 RPM is a major tick.
+        // Explicit Items exactly like the working speedometer.
+        // 31 marks, one every 100 RPM.
+        // Major mark every 500 RPM.
         // ==================================================
         Item {
             id: tickMarks
@@ -446,11 +443,11 @@ Item {
                 rotation: -135
 
                 Rectangle {
-                    width: 3
-                    height: 14
+                    width: 4
+                    height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#181818"
                 }
             }
 
@@ -465,7 +462,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -480,7 +477,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -495,7 +492,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -510,7 +507,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -521,11 +518,11 @@ Item {
                 rotation: -90
 
                 Rectangle {
-                    width: 3
-                    height: 14
+                    width: 4
+                    height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#181818"
                 }
             }
 
@@ -540,7 +537,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -555,7 +552,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -570,7 +567,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -585,7 +582,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -596,11 +593,11 @@ Item {
                 rotation: -45
 
                 Rectangle {
-                    width: 3
-                    height: 14
+                    width: 4
+                    height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#181818"
                 }
             }
 
@@ -615,7 +612,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -630,7 +627,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -645,7 +642,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -660,7 +657,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -671,11 +668,11 @@ Item {
                 rotation: 0
 
                 Rectangle {
-                    width: 3
-                    height: 14
+                    width: 4
+                    height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#181818"
                 }
             }
 
@@ -690,7 +687,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -705,7 +702,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -720,7 +717,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -735,7 +732,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -746,11 +743,11 @@ Item {
                 rotation: 45
 
                 Rectangle {
-                    width: 3
-                    height: 14
+                    width: 4
+                    height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#181818"
                 }
             }
 
@@ -765,7 +762,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -780,7 +777,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -795,7 +792,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -810,7 +807,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -821,11 +818,11 @@ Item {
                 rotation: 90
 
                 Rectangle {
-                    width: 3
-                    height: 14
+                    width: 4
+                    height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#181818"
                 }
             }
 
@@ -840,7 +837,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -855,7 +852,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -870,7 +867,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -885,7 +882,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#707070"
+                    color: "#666663"
                 }
             }
 
@@ -896,11 +893,11 @@ Item {
                 rotation: 135
 
                 Rectangle {
-                    width: 3
-                    height: 14
+                    width: 4
+                    height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#D0D0D0"
+                    color: "#181818"
                 }
             }
         }
@@ -910,10 +907,35 @@ Item {
         // ==================================================
         Text {
             text: "0"
-            x: 73
-            y: 215
 
-            color: "#FFFFFF"
+            width: 40
+            height: 20
+
+            x: 58
+            y: 211
+
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+
+            color: "#181818"
+
+            font.pixelSize: 12
+            font.bold: true
+        }
+
+        Text {
+            text: "500"
+
+            width: 45
+            height: 20
+
+            x: 32
+            y: 139
+
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+
+            color: "#181818"
 
             font.pixelSize: 12
             font.bold: true
@@ -921,10 +943,17 @@ Item {
 
         Text {
             text: "1000"
-            x: 64
-            y: 72
 
-            color: "#FFFFFF"
+            width: 50
+            height: 20
+
+            x: 54
+            y: 70
+
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+
+            color: "#181818"
 
             font.pixelSize: 12
             font.bold: true
@@ -932,22 +961,53 @@ Item {
 
         Text {
             text: "1500"
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: 43
 
-            color: "#FFFFFF"
+            width: 50
+            height: 20
+
+            x: 124
+            y: 40
+
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+
+            color: "#181818"
 
             font.pixelSize: 12
-            anchors.horizontalCenterOffset: -1
             font.bold: true
         }
 
         Text {
             text: "2000"
-            x: 205
-            y: 72
 
-            color: "#FFFFFF"
+            width: 50
+            height: 20
+
+            x: 197
+            y: 70
+
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+
+            color: "#181818"
+
+            font.pixelSize: 12
+            font.bold: true
+        }
+
+        Text {
+            text: "2500"
+
+            width: 50
+            height: 20
+
+            x: 216
+            y: 139
+
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+
+            color: "#181818"
 
             font.pixelSize: 12
             font.bold: true
@@ -955,10 +1015,17 @@ Item {
 
         Text {
             text: "3000"
-            x: 211
-            y: 210
 
-            color: "#FFFFFF"
+            width: 50
+            height: 20
+
+            x: 200
+            y: 208
+
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+
+            color: "#181818"
 
             font.pixelSize: 12
             font.bold: true
@@ -966,12 +1033,33 @@ Item {
 
         // ==================================================
         // NEEDLE
+        // Same implementation style as working Speedometer
         // ==================================================
+        Text {
+            id: gaugeBrand
+
+            y: 98
+
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            text: "Cummins"
+
+            color: "#000000"
+
+            font.family: "Roboto Condensed"
+            font.pixelSize: 14
+            anchors.horizontalCenterOffset: 2
+            font.weight: Font.Bold
+            font.capitalization: Font.AllUppercase
+            font.letterSpacing: 1.2
+        }
+
         Item {
             id: needleAssembly
 
             width: 300
             height: 300
+
             anchors.centerIn: parent
 
             rotation: -135 + (270 * Math.min(Math.max(root.rpm, 0),
@@ -986,16 +1074,16 @@ Item {
             Rectangle {
                 id: needle
 
-                width: 4
-                height: 128
+                width: 8
+                height: 149
 
                 anchors.horizontalCenter: parent.horizontalCenter
+
                 y: 27
 
                 radius: 6
-                anchors.horizontalCenterOffset: 0
 
-                color: "#707070"
+                color: "#FF4500"
             }
         }
 
@@ -1005,35 +1093,32 @@ Item {
         Rectangle {
             id: needleHubOuter
 
-            width: 20
-            height: 20
+            width: 22
+            height: 22
 
             anchors.centerIn: parent
 
-            radius: 10
-            color: "#303030"
+            radius: 11
 
-            border.width: 2
-            border.color: "#A0A0A0"
+            color: "#FF4500"
+
+            border.width: 0
+            border.color: "#3D3D3B"
         }
+        Rectangle {
+            id: needleHubInner
 
-        // ==================================================
-        // CURRENT RPM
-        // ==================================================
-        Text {
-            id: rpmValue
+            width: 6
+            height: 6
 
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: needleHubOuter.bottom
-            anchors.topMargin: 48
+            anchors.centerIn: parent
 
-            text: Math.round(root.rpm)
+            radius: 4
 
-            color: "#F5F5F5"
+            color: "#000000"
 
-            font.pixelSize: 40
-            anchors.horizontalCenterOffset: -3
-            font.bold: true
+            border.width: 0
+            border.color: "#3D3D3B"
         }
 
         // ==================================================
@@ -1042,40 +1127,103 @@ Item {
         Text {
             id: rpmLabel
 
+            y: 175
+
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: rpmValue.bottom
-            anchors.topMargin: -90
+            anchors.horizontalCenterOffset: 1
 
             text: "RPM"
 
-            color: "#909090"
+            color: "#000000"
 
             font.pixelSize: 12
-            anchors.horizontalCenterOffset: 1
             font.bold: true
             font.letterSpacing: 3
         }
 
+        // ==================================================
+        // BRANDING
+        // ==================================================
+
+        // ==================================================
+        // CURRENT RPM
+        // ==================================================
         Text {
-            text: "500"
-            x: 42
-            y: 142
+            id: rpmValue
 
-            color: "#FFFFFF"
+            anchors.horizontalCenter: parent.horizontalCenter
 
-            font.pixelSize: 12
+            y: 205
+
+            text: Math.round(root.rpm)
+
+            color: "#181818"
+
+            font.pixelSize: 40
             font.bold: true
+
+            anchors.horizontalCenterOffset: -1
         }
 
-        Text {
-            text: "2500"
-            x: 235
-            y: 142
+        // ==================================================
+        // TINTED / RECESSED GLASS LENS
+        // ==================================================
+
+        // Very subtle smoked tint over the entire lens
+
+        // ==================================================
+        // BROAD CURVED-GLASS REFLECTION
+        // ==================================================
+        Rectangle {
+            id: glassReflectionBroad
+
+            width: 185
+            height: 42
+
+            x: 34
+            y: 45
+
+            radius: 21
+            rotation: -18
 
             color: "#FFFFFF"
+            opacity: 0.075
 
-            font.pixelSize: 12
-            font.bold: true
+            z: 51
         }
+
+        // ==================================================
+        // SECONDARY REFLECTION
+        // ==================================================
+        Rectangle {
+            id: glassReflectionMid
+
+            width: 110
+            height: 13
+
+            x: 56
+            y: 61
+
+            radius: 7
+            rotation: -18
+
+            color: "#FFFFFF"
+            opacity: 0.12
+
+            z: 52
+        }
+
+        // ==================================================
+        // SHARP SPECULAR HIGHLIGHT
+        // ==================================================
+
+        // ==================================================
+        // DARK INNER LENS EDGE
+        // Creates the recessed appearance
+        // ==================================================
+
+        // ==================================================
+        // FINE OUTER GLASS HIGHLIGHT
+        // ==================================================
     }
 }

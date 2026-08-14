@@ -8,6 +8,7 @@ Check out https://doc.qt.io/qtcreator/creator-quick-ui-forms.html for details on
 */
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Studio.Components
 
 Rectangle {
     x: 0
@@ -17,46 +18,39 @@ Rectangle {
     height: 480
     color: "#000000"
 
-    StateGroup {
-        id: newStateGroup
-    }
-
     Image {
         id: image
-
-        x: 15
-        y: -3
-
-        // Locked native dimensions
+        x: 0
+        y: -24
         width: 800
         height: 480
-
-        source: "images/chummins_bg.png"
+        source: "images/chummins_bg_light.png"
         fillMode: Image.PreserveAspectFit
+    }
 
-        // Change ONLY this to visually resize it
-        scale: .80
+    StateGroup {
+        id: newStateGroup
     }
 
     Tachometer {
         id: tachometer
 
-        x: 509
-        y: 60
+        x: 488
+        y: 4
 
         width: 290
         height: 290
 
-        rpm: 1200
+        rpm: 1500
     }
 
     DriveStatus {
         id: driveStatus
 
-        x: 258
-        y: 356
-        width: 272
-        height: 125
+        x: 586
+        y: 383
+        width: 210
+        height: 104
 
         // Transmission states
         overdriveActive: true
@@ -69,20 +63,31 @@ Rectangle {
 
     Speedometer {
         id: speedometer
-        x: 1
-        y: 60
-        width: 290
-        height: 290
-        speed: 25
+        x: 44
+        y: 24
+        width: 250
+        height: 250
+        speed: 50
     }
 
     Image {
         id: image1
-        x: 286
-        y: -19
-        width: 218
-        height: 244
+        x: 256
+        y: -76
+        width: 284
+        height: 289
         source: "images/Cummins_logo.svg"
         fillMode: Image.PreserveAspectFit
+    }
+
+    DriveStatus {
+        id: driveStatus1
+        x: 8
+        y: 376
+        width: 210
+        height: 104
+        overdriveActive: true
+        lockupActive: true
+        driveState: "power"
     }
 }
