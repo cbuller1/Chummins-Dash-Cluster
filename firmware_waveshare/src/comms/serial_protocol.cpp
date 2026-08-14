@@ -11,6 +11,7 @@ void serial_publish(const DashState& state) {
     doc["od"]      = state.overdriveActive;
     doc["blink_l"] = state.blinkerLeft;
     doc["blink_r"] = state.blinkerRight;
+    doc["ign"]     = state.ignitionOn;
     doc["gear"]    = state.gear;
     doc["range"]   = state.range;
 

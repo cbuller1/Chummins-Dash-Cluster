@@ -28,7 +28,7 @@
 #define PIN_DI_SPARE_1       9
 #define PIN_DI_SPARE_2       10
 #define PIN_DI_SPARE_3       11
-#define PIN_DI_SPARE_4       12
+#define PIN_DI_IGNITION      12  // ignition hot signal (active = key on)
 
 // -- 8 Digital Outputs (relay — open for future use) ------------
 #define PIN_DO_1             13

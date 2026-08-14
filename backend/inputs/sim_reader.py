@@ -112,6 +112,7 @@ class SimReader:
         cycle_phase = (self._elapsed % CYCLE_PERIOD) / CYCLE_PERIOD
         self._backend.leftTurnActive  = flash and cycle_phase < 0.33
         self._backend.rightTurnActive = flash and cycle_phase > 0.67
+        self._backend.ignitionOn = True  # always hot in simulation
 
         # Transfer case: advance index every _TC_CHANGE_INTERVAL_S seconds
         tc_index = int(self._elapsed / _TC_CHANGE_INTERVAL_S) % len(_TRANSFER_CASE_SEQUENCE)

@@ -9,6 +9,7 @@ struct DashState {
     bool        overdriveActive;
     bool        blinkerLeft;
     bool        blinkerRight;
+    bool        ignitionOn;
     int         gear;           // 0 = neutral, -1 = unknown
     const char* range;          // "2hi" | "4hi" | "4lo" | "n"
 };

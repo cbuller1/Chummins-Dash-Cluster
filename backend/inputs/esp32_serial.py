@@ -46,12 +46,14 @@ class ESP32Serial:
     def connect(self) -> None:
         """Open the serial port."""
         self._serial = serial.Serial(self._port, self._baud_rate, timeout=1)
+        self._backend.esp32Connected = True
         logger.info("Connected to ESP32 on %s at %d baud", self._port, self._baud_rate)
 
     def disconnect(self) -> None:
         """Close the serial port."""
         if self._serial and self._serial.is_open:
             self._serial.close()
+        self._backend.esp32Connected = False
 
     # ------------------------------------------------------------------
     # Reader thread
@@ -60,6 +62,7 @@ class ESP32Serial:
     def start(self) -> None:
         """Connect and start the background reader thread."""
         self.connect()
+        self._backend.relayCommandRequested.connect(self._send_relay)
         self._running = True
         self._thread = threading.Thread(target=self._read_loop, daemon=True, name="esp32-serial")
         self._thread.start()
@@ -81,6 +84,7 @@ class ESP32Serial:
                     self._parse_message(raw)
             except serial.serialutil.SerialException as exc:
                 logger.error("Serial read error: %s", exc)
+                self._backend.esp32Connected = False
                 break
             except Exception as exc:  # noqa: BLE001
                 logger.warning("Unexpected error in read loop: %s", exc)
@@ -104,6 +108,7 @@ class ESP32Serial:
         if "od"      in data: self._on_overdrive(bool(data["od"]))
         if "blink_l" in data: self._on_blinker_left(bool(data["blink_l"]))
         if "blink_r" in data: self._on_blinker_right(bool(data["blink_r"]))
+        if "ign"     in data: self._backend.ignitionOn = bool(data["ign"])
         if "gear"    in data: self._on_gear(int(data["gear"]))
         if "range"   in data: self._on_range(str(data["range"]))
 
@@ -131,6 +136,11 @@ class ESP32Serial:
 
     def _on_range(self, value: str) -> None:
         self._backend.range = value
+
+    def _send_relay(self, index: int, state: bool) -> None:
+        if self._serial and self._serial.is_open:
+            cmd = json.dumps({"cmd": "relay", "i": index, "v": state}) + "\n"
+            self._serial.write(cmd.encode("utf-8"))
 
     def _on_blinker_left(self, active: bool) -> None:
         self._backend.blinkerLeft = active

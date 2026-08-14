@@ -46,6 +46,10 @@ def main() -> None:
 
     reader.start()
 
+    from backend.data_logger import DataLogger
+    data_logger = DataLogger(backend)
+    data_logger.start()
+
     engine = QQmlApplicationEngine()
     engine.addImportPath(str(PROJECT_ROOT / "qml_imports"))
     engine.rootContext().setContextProperty("backend", backend)
@@ -55,7 +59,9 @@ def main() -> None:
         sys.exit(-1)
 
     exit_code = app.exec()
-    del engine   # tear down QML bindings before backend is garbage-collected
+    del engine
+    data_logger.stop()
+    backend.save_data()   # flush final mileage before exit
     sys.exit(exit_code)
 
 
