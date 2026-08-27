@@ -10,17 +10,21 @@ qt6_add_qml_module(Chummins_DashContent
     RESOURCE_PREFIX "/qt/qml"
     QML_FILES
         "App.qml"
+        "BackupCameraPage.qml"
         "Constants.ui.qml"
         "DriveState.ui.qml"
+        "EngineSensors.ui.qml"
+        "FrontCameraPage.qml"
+        "InfoPage.qml"
+        "LeftTurnIndicator.ui.qml"
         "LockupStatus.ui.qml"
         "OverdriveStatus.ui.qml"
         "RangeIndicator.ui.qml"
+        "RelayControlPage.qml"
+        "RightTurnIndicator.ui.qml"
         "Screen01.ui.qml"
         "Speedometer.ui.qml"
         "Tachometer.ui.qml"
-        "EngineSensors.ui.qml"
-        "LeftTurnIndicator.ui.qml"
-        "RightTurnIndicator.ui.qml"
     RESOURCES
         "images/chummins_bg.png"
         "images/chummins_bg_light.png"
@@ -30,6 +34,7 @@ qt6_add_qml_module(Chummins_DashContent
         "images/gauge_bezel.svg"
         "images/glass.svg"
         "images/glossy-transparent-vector-glass-clear-260nw-2414459803.webp"
+        "images/chummins.svg"
 )
 
 

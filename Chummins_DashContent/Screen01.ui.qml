@@ -39,7 +39,7 @@ Rectangle {
         EngineSensors {
             id: engineSensors
             x: 250
-            y: 436
+            y: 425
             width: 303
             height: 44
             boostPsi: backend.boost
@@ -83,11 +83,11 @@ Rectangle {
 
     Image {
         id: image1
-        x: 303
-        y: -29
-        width: 189
-        height: 206
-        source: "images/Cummins_logo.svg"
+        x: 341
+        y: 11
+        width: 110
+        height: 127
+        source: "images/chummins.svg"
         fillMode: Image.PreserveAspectFit
     }
     LeftTurnIndicator {

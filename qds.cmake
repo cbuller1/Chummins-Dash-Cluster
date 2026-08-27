@@ -10,8 +10,9 @@ qt6_add_resources(${CMAKE_PROJECT_NAME} MainResource
     PREFIX "/qt/qml"
     VERSION 1.0
     FILES 
-        ".vscode/settings.json"
         ".vscode/c_cpp_properties.json"
+        ".vscode/settings.json"
+        "data/vehicle_data.json"
         "firmware_waveshare/.pio/libdeps/waveshare-esp32s3-poe/ArduinoJson/library.json"
 )
 
