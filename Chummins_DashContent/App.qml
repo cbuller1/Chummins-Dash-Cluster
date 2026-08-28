@@ -5,6 +5,7 @@ import QtQuick.Studio.Components
 
 Window {
     id: root
+
     width: 800
     height: 480
     visibility: Window.FullScreen
@@ -12,12 +13,21 @@ Window {
     title: "Chummins_Dash"
 
     // Scale 800x480 design space uniformly to fill the screen
-    readonly property real contentScale: Math.min(width / 800, height / 480)
+    readonly property real contentScale: Math.min(
+        width / 800,
+        height / 480
+    )
+
+    // ============================================================
+    // MAIN DASHBOARD CONTENT
+    // ============================================================
 
     Item {
         id: contentRoot
+
         width: 800
         height: 480
+
         x: (root.width - 800 * root.contentScale) / 2
         y: (root.height - 480 * root.contentScale) / 2
 
@@ -28,8 +38,11 @@ Window {
 
         SwipeView {
             id: swipeView
+
             anchors.fill: parent
-            currentIndex: 2  // start on cluster page
+
+            // Start on cluster page
+            currentIndex: 2
 
             BackupCameraPage {}
 
@@ -44,11 +57,15 @@ Window {
             InfoPage {}
         }
 
-        // Page indicator dots — active dot expands and turns green
+        // ========================================================
+        // PAGE INDICATOR
+        // ========================================================
+
         Row {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 6
             anchors.horizontalCenter: parent.horizontalCenter
+
             spacing: 8
             opacity: 0.75
             z: 10
@@ -57,9 +74,13 @@ Window {
                 model: 5
 
                 Rectangle {
-                    width: swipeView.currentIndex === index ? 20 : 8
+                    width: swipeView.currentIndex === index
+                           ? 20
+                           : 8
+
                     height: 8
                     radius: 4
+
                     color: swipeView.currentIndex === index
                            ? "#48D978"
                            : "#555555"
@@ -76,12 +97,23 @@ Window {
 
     // ============================================================
     // BRIGHTNESS OVERLAY
+    //
+    // This remains separate from the startup fade.
+    // backend.brightness controls normal dashboard brightness after
+    // startup has completed.
     // ============================================================
+
     Rectangle {
+        id: brightnessOverlay
+
         anchors.fill: parent
+
         color: "black"
+
         opacity: 1.0 - backend.brightness
+
         z: 100
+
         visible: opacity > 0.01
 
         Behavior on opacity {
@@ -92,60 +124,46 @@ Window {
     }
 
     // ============================================================
-    // STARTUP SPLASH
+    // STARTUP FADE
     //
-    // This covers the already-loaded dashboard with the same image
-    // used by Plymouth. Once Qt is running, it briefly holds the
-    // image and then fades away to reveal the gauges underneath.
+    // No image is displayed here.
+    //
+    // Qt initially presents a completely black screen. The actual
+    // dashboard is already rendered underneath this rectangle.
+    //
+    // Over 3.5 seconds the black overlay becomes transparent,
+    // gradually revealing the gauges.
     // ============================================================
-    Item {
-        id: startupSplash
+
+    Rectangle {
+        id: startupFade
+
         anchors.fill: parent
+
+        color: "black"
+
         z: 200
+
         opacity: 1.0
         visible: true
 
-        // Black background prevents anything behind the splash
-        // from becoming visible around the image.
-        Rectangle {
-            anchors.fill: parent
-            color: "black"
-        }
+        Component.onCompleted: startupFadeAnimation.start()
 
-        Image {
-            id: startupSplashImage
-            anchors.centerIn: parent
+        NumberAnimation {
+            id: startupFadeAnimation
 
-            source: "images/splash.png"
+            target: startupFade
+            property: "opacity"
 
-            fillMode: Image.Pad
-            smooth: true
-            asynchronous: false
-            cache: true
-        }
+            from: 1.0
+            to: 0.0
 
-        Component.onCompleted: splashSequence.start()
+            duration: 3500
 
-        SequentialAnimation {
-            id: splashSequence
+            easing.type: Easing.InOutQuad
 
-            // Allow the completed dashboard scene to actually
-            // reach the compositor before revealing it.
-            PauseAnimation {
-                duration: 250
-            }
-
-            NumberAnimation {
-                target: startupSplash
-                property: "opacity"
-                from: 1.0
-                to: 0.0
-                duration: 250
-                easing.type: Easing.InOutQuad
-            }
-
-            ScriptAction {
-                script: startupSplash.visible = false
+            onFinished: {
+                startupFade.visible = false
             }
         }
     }
