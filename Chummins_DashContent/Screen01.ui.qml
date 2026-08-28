@@ -38,9 +38,9 @@ Rectangle {
 
         EngineSensors {
             id: engineSensors
-            x: 250
-            y: 425
-            width: 303
+            x: 212
+            y: 428
+            width: 379
             height: 44
             boostPsi: backend.boost
             throttlePosition: backend.tps
