@@ -26,6 +26,7 @@ qt6_add_qml_module(Chummins_DashContent
         "Speedometer.ui.qml"
         "Tachometer.ui.qml"
     RESOURCES
+        "images/chummins.svg"
         "images/chummins_bg.png"
         "images/chummins_bg_light.png"
         "images/chummins_front.png"
@@ -34,7 +35,7 @@ qt6_add_qml_module(Chummins_DashContent
         "images/gauge_bezel.svg"
         "images/glass.svg"
         "images/glossy-transparent-vector-glass-clear-260nw-2414459803.webp"
-        "images/chummins.svg"
+        "images/splash.png"
 )
 
 

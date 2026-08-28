@@ -16,7 +16,6 @@ Item {
 
     // ==============================
     // SENSOR COUNT
-    // Change this as sensors are added
     // ==============================
     property int sensorCount: 2
 
@@ -31,7 +30,6 @@ Item {
     // ==============================
     Rectangle {
         id: panel
-
         anchors.fill: parent
 
         radius: 4
@@ -40,15 +38,11 @@ Item {
         border.width: 0
         border.color: "#B8B8B4"
 
-        // ==========================
-        // INNER BORDER
-        // ==========================
         Rectangle {
             id: innerBorder
 
             x: 4
             y: 4
-
             width: parent.width - 8
             height: parent.height - 8
 
@@ -85,6 +79,11 @@ Item {
 
                     anchors.left: parent.left
                     anchors.leftMargin: 12
+
+                    // Never allow label into value area
+                    anchors.right: boostValue.left
+                    anchors.rightMargin: 12
+
                     anchors.verticalCenter: parent.verticalCenter
 
                     text: "BOOST"
@@ -94,6 +93,8 @@ Item {
                     font.pixelSize: 14
                     font.bold: true
                     font.letterSpacing: 1.0
+
+                    elide: Text.ElideRight
                 }
 
                 Text {
@@ -114,11 +115,10 @@ Item {
 
                 Rectangle {
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
 
                     width: 1
                     height: 24
-
-                    anchors.verticalCenter: parent.verticalCenter
 
                     color: "#555555"
                 }
@@ -138,6 +138,11 @@ Item {
 
                     anchors.left: parent.left
                     anchors.leftMargin: 12
+
+                    // Never allow label into value area
+                    anchors.right: throttleValue.left
+                    anchors.rightMargin: 12
+
                     anchors.verticalCenter: parent.verticalCenter
 
                     text: "THROTTLE"
@@ -147,6 +152,8 @@ Item {
                     font.pixelSize: 14
                     font.bold: true
                     font.letterSpacing: 1.0
+
+                    elide: Text.ElideRight
                 }
 
                 Text {
