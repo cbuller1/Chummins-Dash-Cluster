@@ -6,6 +6,7 @@ import sys
 import time
 from pathlib import Path
 
+
 # ---------------------------------------------------------------------------
 # Startup timing
 # ---------------------------------------------------------------------------
@@ -26,12 +27,19 @@ boot_log("Python started")
 
 # ---------------------------------------------------------------------------
 # Qt environment
-# These must be set before QApplication is created.
+# These must be set before QGuiApplication is created.
 # ---------------------------------------------------------------------------
 
 os.environ["QML_COMPAT_RESOLVE_URLS_ON_ASSIGNMENT"] = "1"
 os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
-os.environ["QT_LOGGING_RULES"] = "qt.qml.connections=false"
+
+# Allow start-dashboard.sh / systemd to override Qt logging rules.
+# If nothing has been configured externally, suppress the noisy QML
+# Connections warnings as before.
+os.environ.setdefault(
+    "QT_LOGGING_RULES",
+    "qt.qml.connections=false",
+)
 
 PROJECT_ROOT = Path(__file__).parent
 
@@ -46,13 +54,12 @@ boot_log("Qt environment configured")
 # Qt / application imports
 #
 # These imports happen while Plymouth is still displaying the boot splash.
-# Importing PySide does not take ownership of DRM. QApplication does.
+# Importing PySide does not take ownership of DRM. QGuiApplication does.
 # ---------------------------------------------------------------------------
 
-from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QGuiApplication, QCursor
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import QUrl, Qt
-from PySide6.QtGui import QCursor
 
 boot_log("PySide6 imported")
 
@@ -178,7 +185,7 @@ def release_plymouth() -> None:
         plymouth quit --retain-splash
 
     This allows Plymouth to keep displaying the boot image while Python and
-    PySide import, then release DRM immediately before QApplication/EGLFS
+    PySide import, then release DRM immediately before QGuiApplication/EGLFS
     acquires the display.
     """
 
@@ -259,7 +266,7 @@ def main() -> None:
     #       ↓
     #   Plymouth releases DRM
     #       ↓
-    #   QApplication/EGLFS acquires DRM
+    #   QGuiApplication/EGLFS acquires DRM
     #
     # Do NOT wait for frameSwapped before releasing Plymouth. EGLFS cannot
     # render a frame while Plymouth still owns DRM.
@@ -271,11 +278,11 @@ def main() -> None:
     # Qt application
     # -----------------------------------------------------------------------
 
-    boot_log("creating QApplication")
+    boot_log("creating QGuiApplication")
 
-    app = QApplication(sys.argv)
+    app = QGuiApplication(sys.argv)
 
-    boot_log("QApplication created")
+    boot_log("QGuiApplication created")
 
     # Hide the mouse pointer for the instrument cluster.
     app.setOverrideCursor(
