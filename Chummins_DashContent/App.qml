@@ -62,5 +62,14 @@ Window {
             }
         }
     }
+
+    Rectangle {
+        anchors.fill: parent
+        color: "black"
+        opacity: 1.0 - backend.brightness
+        z: 100
+        visible: opacity > 0.01
+        Behavior on opacity { NumberAnimation { duration: 150 } }
+    }
 }
 

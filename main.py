@@ -1,4 +1,5 @@
 import argparse
+import configparser
 import os
 import sys
 import time
@@ -56,32 +57,63 @@ boot_log("DashBackend imported")
 
 
 # ---------------------------------------------------------------------------
-# Command-line arguments
+# Command-line arguments  (hardware.ini provides defaults; CLI args override)
 # ---------------------------------------------------------------------------
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Chummins Dash")
+    # Load hardware.ini — values here become the default for every arg below.
+    hw = configparser.ConfigParser()
+    hw.read(PROJECT_ROOT / "hardware.ini")
+
+    parser = argparse.ArgumentParser(
+        description="Chummins Dash",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="Default port/baud values are read from hardware.ini in the project root.",
+    )
 
     parser.add_argument(
         "--port",
         metavar="PORT",
-        help=(
-            "ESP32 USB serial port (e.g. /dev/ttyACM0). "
-            "Omit to run in simulation mode."
-        ),
+        help="Waveshare ESP32 USB serial port.  Overrides hardware.ini [waveshare] port.",
     )
 
     parser.add_argument(
         "--baud",
         type=int,
-        default=115200,
         metavar="BAUD",
+        help="Waveshare baud rate.  Overrides hardware.ini [waveshare] baud.",
     )
 
-    # parse_known_args allows Qt arguments such as --platform
-    # to pass through without argparse rejecting them.
-    args, _ = parser.parse_known_args()
+    parser.add_argument(
+        "--sim",
+        action="store_true",
+        help="Run in simulation mode (no hardware required).  Overrides hardware.ini [app] sim.",
+    )
 
+    parser.add_argument(
+        "--gps-port",
+        metavar="PORT",
+        help="Feather GPS USB serial port.  Overrides hardware.ini [feather_gps] port.",
+    )
+
+    parser.add_argument(
+        "--gps-baud",
+        type=int,
+        metavar="BAUD",
+        help="Feather GPS baud rate.  Overrides hardware.ini [feather_gps] baud.",
+    )
+
+    # Apply hardware.ini values as argparse defaults so CLI args still override.
+    parser.set_defaults(
+        port     = hw.get("waveshare",  "port", fallback=None) or None,
+        baud     = hw.getint("waveshare",  "baud", fallback=115200),
+        sim      = hw.getboolean("app", "sim", fallback=False),
+        gps_port = hw.get("feather_gps", "port", fallback=None) or None,
+        gps_baud = hw.getint("feather_gps", "baud", fallback=115200),
+    )
+
+    # parse_known_args lets Qt platform arguments (--platform, etc.) pass through.
+    args, _ = parser.parse_known_args()
     return args
 
 
@@ -126,6 +158,7 @@ def main() -> None:
 
     boot_log("creating vehicle data reader")
 
+    reader = None
     if args.port:
         from backend.inputs.esp32_serial import ESP32Serial
 
@@ -139,36 +172,42 @@ def main() -> None:
             f"ESP32Serial created: port={args.port}, baud={args.baud}"
         )
 
-    else:
+    elif args.sim:
         from backend.inputs.sim_reader import SimReader
 
         reader = SimReader(backend)
 
-        boot_log("SimReader created")
+        boot_log("SimReader created (simulation mode)")
+
+    else:
+        print(
+            "WARNING: no data source configured — UI will show zero values.\n"
+            "  Set [waveshare] port in hardware.ini, or pass --port / --sim.",
+            flush=True,
+        )
 
     boot_log("starting vehicle data reader")
 
-    reader.start()
-
-    boot_log("vehicle data reader started")
+    if reader:
+        reader.start()
+        boot_log("vehicle data reader started")
+    else:
+        boot_log("no vehicle data reader — UI running in display-only mode")
 
     # -----------------------------------------------------------------------
-    # Data logger
+    # Feather GPS reader (optional — speed, odometer, trip)
     # -----------------------------------------------------------------------
 
-    boot_log("importing DataLogger")
+    if args.gps_port:
+        from backend.inputs.feather_gps_serial import FeatherGPSSerial
 
-    from backend.data_logger import DataLogger
-
-    boot_log("DataLogger imported")
-
-    data_logger = DataLogger(backend)
-
-    boot_log("DataLogger created")
-
-    data_logger.start()
-
-    boot_log("DataLogger started")
+        gps_reader = FeatherGPSSerial(
+            backend,
+            args.gps_port,
+            args.gps_baud,
+        )
+        gps_reader.start()
+        boot_log(f"FeatherGPSSerial started: port={args.gps_port}")
 
     # -----------------------------------------------------------------------
     # QML engine

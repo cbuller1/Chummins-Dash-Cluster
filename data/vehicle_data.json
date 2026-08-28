@@ -1,8 +1,9 @@
 {
-  "odometer": 16.530150015377817,
-  "trip": 6.4639147314853425,
-  "engine_oil_trip": 16.451009433562863,
-  "trans_oil_trip": 16.427161403857813,
-  "diff_fluid_trip": 16.375765139161004,
-  "coolant_trip": 16.34880826191605
+  "odometer": 17.201378119222174,
+  "trip": 7.135142835329706,
+  "engine_oil_trip": 17.12223753740722,
+  "trans_oil_trip": 17.09838950770217,
+  "diff_fluid_trip": 17.04699324300536,
+  "coolant_trip": 17.020036365760408,
+  "brightness": 1.0
 }

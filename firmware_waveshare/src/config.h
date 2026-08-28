@@ -11,7 +11,7 @@
 // For alternator W-terminal: set PULSES_PER_REV to
 //   (alternator_poles / 2) * pulley_ratio  (e.g. 3 * 2.5 = 7.5)
 #define PIN_RPM_INPUT        4
-#define RPM_PULSES_PER_REV   1      // 1 for direct crank sensor
+#define RPM_PULSES_PER_REV   4      // Universal tach adapter: 4 pulses per revolution
 
 // -- CAN bus (TWAI) — receives sensor data from Feather M4 ------
 // GPIOs 1 & 2 freed up after removing local ADC inputs

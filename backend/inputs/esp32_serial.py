@@ -19,11 +19,19 @@ from typing import TYPE_CHECKING
 
 import serial
 import serial.serialutil
+from PySide6.QtCore import QObject, Signal, Slot, Qt
+
+from backend.logic.drive_state import DriveStateCalculator
 
 if TYPE_CHECKING:
     from backend.dash_backend import DashBackend
 
 logger = logging.getLogger(__name__)
+
+
+class _MainThreadDispatcher(QObject):
+    """Receives parsed frames cross-thread and applies them on the main thread."""
+    frameReady = Signal(dict)
 
 
 class ESP32Serial:
@@ -38,6 +46,14 @@ class ESP32Serial:
         self._serial: serial.Serial | None = None
         self._thread: threading.Thread | None = None
         self._running = False
+        self._write_lock = threading.Lock()
+        self._calc = DriveStateCalculator()
+        # QueuedConnection delivers the signal on the main thread regardless
+        # of which thread emits it, keeping all QObject writes on the main thread.
+        self._dispatcher = _MainThreadDispatcher()
+        self._dispatcher.frameReady.connect(
+            self._apply_frame, Qt.ConnectionType.QueuedConnection
+        )
 
     # ------------------------------------------------------------------
     # Connection lifecycle
@@ -61,7 +77,11 @@ class ESP32Serial:
 
     def start(self) -> None:
         """Connect and start the background reader thread."""
-        self.connect()
+        try:
+            self.connect()
+        except serial.serialutil.SerialException as exc:
+            logger.warning("Waveshare port %r unavailable: %s — running without it", self._port, exc)
+            return
         self._backend.relayCommandRequested.connect(self._send_relay)
         self._running = True
         self._thread = threading.Thread(target=self._read_loop, daemon=True, name="esp32-serial")
@@ -90,62 +110,54 @@ class ESP32Serial:
                 logger.warning("Unexpected error in read loop: %s", exc)
 
     # ------------------------------------------------------------------
-    # Protocol parsing
+    # Protocol parsing  (called from background thread)
     # ------------------------------------------------------------------
 
     def _parse_message(self, raw: bytes) -> None:
-        """Parse one newline-delimited JSON frame and dispatch to handlers."""
+        """Decode one JSON frame and post it to the main thread."""
         try:
             data: dict = json.loads(raw.decode("utf-8", errors="replace"))
         except json.JSONDecodeError:
             logger.debug("Non-JSON line: %r", raw)
             return
-
-        if "rpm"     in data: self._on_rpm(float(data["rpm"]))
-        if "tps"     in data: self._on_tps(float(data["tps"]))
-        if "boost"   in data: self._on_boost(float(data["boost"]))
-        if "lockup"  in data: self._on_lockup(bool(data["lockup"]))
-        if "od"      in data: self._on_overdrive(bool(data["od"]))
-        if "blink_l" in data: self._on_blinker_left(bool(data["blink_l"]))
-        if "blink_r" in data: self._on_blinker_right(bool(data["blink_r"]))
-        if "ign"     in data: self._backend.ignitionOn = bool(data["ign"])
-        if "gear"    in data: self._on_gear(int(data["gear"]))
-        if "range"   in data: self._on_range(str(data["range"]))
+        self._dispatcher.frameReady.emit(data)
 
     # ------------------------------------------------------------------
-    # Per-signal handlers
+    # Frame application  (called on the Qt main thread via QueuedConnection)
     # ------------------------------------------------------------------
 
-    def _on_rpm(self, value: float) -> None:
-        self._backend.rpm = value
+    @Slot(dict)
+    def _apply_frame(self, data: dict) -> None:
+        b = self._backend
 
-    def _on_tps(self, value: float) -> None:
-        self._backend.tps = value
+        if "rpm"     in data: b.rpm             = float(data["rpm"])
+        if "tps"     in data: b.tps             = float(data["tps"])
+        if "boost"   in data: b.boost           = float(data["boost"])
+        if "lockup"  in data: b.lockupActive    = bool(data["lockup"])
+        if "od"      in data: b.overdriveActive = bool(data["od"])
+        if "blink_l" in data:
+            active = bool(data["blink_l"])
+            b.blinkerLeft    = active
+            b.leftTurnActive = active
+        if "blink_r" in data:
+            active = bool(data["blink_r"])
+            b.blinkerRight    = active
+            b.rightTurnActive = active
+        if "ign"     in data: b.ignitionOn = bool(data["ign"])
+        if "gear"    in data: b.gear       = int(data["gear"])
+        if "range"   in data: b.range      = str(data["range"])
 
-    def _on_boost(self, value: float) -> None:
-        self._backend.boost = value
-
-    def _on_gear(self, gear: int) -> None:
-        self._backend.gear = gear
-
-    def _on_lockup(self, active: bool) -> None:
-        self._backend.lockupActive = active
-
-    def _on_overdrive(self, active: bool) -> None:
-        self._backend.overdriveActive = active
-
-    def _on_range(self, value: str) -> None:
-        self._backend.range = value
+        b.driveState = self._calc.calculate(
+            rpm=b.rpm,
+            gear=b.gear,
+            lockup_active=b.lockupActive,
+            overdrive_active=b.overdriveActive,
+            boost=b.boost,
+            tps=b.tps,
+        )
 
     def _send_relay(self, index: int, state: bool) -> None:
         if self._serial and self._serial.is_open:
             cmd = json.dumps({"cmd": "relay", "i": index, "v": state}) + "\n"
-            self._serial.write(cmd.encode("utf-8"))
-
-    def _on_blinker_left(self, active: bool) -> None:
-        self._backend.blinkerLeft = active
-        self._backend.leftTurnActive = active
-
-    def _on_blinker_right(self, active: bool) -> None:
-        self._backend.blinkerRight = active
-        self._backend.rightTurnActive = active
+            with self._write_lock:
+                self._serial.write(cmd.encode("utf-8"))

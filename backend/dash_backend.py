@@ -32,16 +32,19 @@ class DashBackend(QObject):
     esp32ConnectedChanged = Signal()
     historyChanged = Signal()  # kept for compatibility; no longer emitted
     ignitionOnChanged = Signal()
+    featherGpsConnectedChanged = Signal()
     engineOilTripChanged = Signal()
     transOilTripChanged = Signal()
     diffFluidTripChanged = Signal()
     coolantTripChanged = Signal()
+    brightnessChanged = Signal()
+    counterResetRequested = Signal(str)  # forwarded to Feather GPS firmware
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._rpm: float = 1500.0
-        self._speed: float = 50.0
-        self._gear: int = 1           # 0 = neutral, 1-6 = forward gears
+        self._rpm: float = 0.0
+        self._speed: float = 0.0
+        self._gear: int = 0           # 0 = neutral, 1-6 = forward gears
         self._driveState: str = "normal"  # "normal" | "lugging" | "power" | "redline"
         self._overdriveActive: bool = False
         self._lockupActive: bool = False
@@ -54,14 +57,17 @@ class DashBackend(QObject):
         self._rightTurnActive: bool = False
         self._relay_states: list = [False] * 8
         self._store = PersistentStore()
-        self._trip: float = self._store.get("trip")
-        self._odometer: float = self._store.get("odometer")
-        self._engine_oil_trip: float = self._store.get("engine_oil_trip")
-        self._trans_oil_trip: float = self._store.get("trans_oil_trip")
-        self._diff_fluid_trip: float = self._store.get("diff_fluid_trip")
-        self._coolant_trip: float = self._store.get("coolant_trip")
+        # speed/odometer/trip are owned by the Feather M4; initialize to 0 until it reports
+        self._trip: float = 0.0
+        self._odometer: float = 0.0
+        self._engine_oil_trip: float = 0.0
+        self._trans_oil_trip: float = 0.0
+        self._diff_fluid_trip: float = 0.0
+        self._coolant_trip: float = 0.0
         self._esp32Connected: bool = False
+        self._featherGpsConnected: bool = False
         self._ignitionOn: bool = False
+        self._brightness: float = self._store.get("brightness")
 
     # ------------------------------------------------------------------
     # rpm
@@ -303,6 +309,20 @@ class DashBackend(QObject):
             self.esp32ConnectedChanged.emit()
 
     # ------------------------------------------------------------------
+    # featherGpsConnected
+    # ------------------------------------------------------------------
+
+    @Property(bool, notify=featherGpsConnectedChanged)
+    def featherGpsConnected(self) -> bool:
+        return self._featherGpsConnected
+
+    @featherGpsConnected.setter
+    def featherGpsConnected(self, value: bool) -> None:
+        if self._featherGpsConnected != value:
+            self._featherGpsConnected = value
+            self.featherGpsConnectedChanged.emit()
+
+    # ------------------------------------------------------------------
     # ignitionOn
     # ------------------------------------------------------------------
 
@@ -317,54 +337,65 @@ class DashBackend(QObject):
             self.ignitionOnChanged.emit()
 
     # ------------------------------------------------------------------
-    # Service interval trip counters (read-only properties; use add_distance / resetCounter)
+    # Service interval trip counters (set by Feather M4 reader)
     # ------------------------------------------------------------------
 
     @Property(float, notify=engineOilTripChanged)
     def engineOilTrip(self) -> float:
         return self._engine_oil_trip
 
+    @engineOilTrip.setter
+    def engineOilTrip(self, value: float) -> None:
+        if self._engine_oil_trip != value:
+            self._engine_oil_trip = value
+            self.engineOilTripChanged.emit()
+
     @Property(float, notify=transOilTripChanged)
     def transOilTrip(self) -> float:
         return self._trans_oil_trip
+
+    @transOilTrip.setter
+    def transOilTrip(self, value: float) -> None:
+        if self._trans_oil_trip != value:
+            self._trans_oil_trip = value
+            self.transOilTripChanged.emit()
 
     @Property(float, notify=diffFluidTripChanged)
     def diffFluidTrip(self) -> float:
         return self._diff_fluid_trip
 
+    @diffFluidTrip.setter
+    def diffFluidTrip(self, value: float) -> None:
+        if self._diff_fluid_trip != value:
+            self._diff_fluid_trip = value
+            self.diffFluidTripChanged.emit()
+
     @Property(float, notify=coolantTripChanged)
     def coolantTrip(self) -> float:
         return self._coolant_trip
 
+    @coolantTrip.setter
+    def coolantTrip(self, value: float) -> None:
+        if self._coolant_trip != value:
+            self._coolant_trip = value
+            self.coolantTripChanged.emit()
+
     # ------------------------------------------------------------------
-    # Mileage accumulation & persistence
+    # brightness
     # ------------------------------------------------------------------
 
-    def add_distance(self, miles: float) -> None:
-        """Called by DataLogger at 1 Hz; increments all mileage counters."""
-        if miles <= 0:
-            return
-        self._odometer        += miles
-        self._trip            += miles
-        self._engine_oil_trip += miles
-        self._trans_oil_trip  += miles
-        self._diff_fluid_trip += miles
-        self._coolant_trip    += miles
-        self.odometerChanged.emit()
-        self.tripChanged.emit()
-        self.engineOilTripChanged.emit()
-        self.transOilTripChanged.emit()
-        self.diffFluidTripChanged.emit()
-        self.coolantTripChanged.emit()
+    @Property(float, notify=brightnessChanged)
+    def brightness(self) -> float:
+        return self._brightness
 
-    def save_data(self) -> None:
-        self._store.set("odometer",        self._odometer)
-        self._store.set("trip",             self._trip)
-        self._store.set("engine_oil_trip",  self._engine_oil_trip)
-        self._store.set("trans_oil_trip",   self._trans_oil_trip)
-        self._store.set("diff_fluid_trip",  self._diff_fluid_trip)
-        self._store.set("coolant_trip",     self._coolant_trip)
-        self._store.save()
+    @brightness.setter
+    def brightness(self, value: float) -> None:
+        value = max(0.1, min(1.0, value))
+        if self._brightness != value:
+            self._brightness = value
+            self._store.set("brightness", value)
+            self._store.save()
+            self.brightnessChanged.emit()
 
     @Slot(str)
     def resetCounter(self, name: str) -> None:
@@ -375,4 +406,4 @@ class DashBackend(QObject):
         elif name == "diffFluidTrip":  self._diff_fluid_trip = 0.0; self.diffFluidTripChanged.emit()
         elif name == "coolantTrip":    self._coolant_trip = 0.0;    self.coolantTripChanged.emit()
         # odometer is intentionally excluded
-        self.save_data()
+        self.counterResetRequested.emit(name)
