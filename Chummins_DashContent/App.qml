@@ -87,7 +87,7 @@ Window {
             property: "opacity"
             from: 1.0
             to: 0.0
-            duration: 1200
+            duration: 3500
             easing.type: Easing.InOutQuad
         }
     }
