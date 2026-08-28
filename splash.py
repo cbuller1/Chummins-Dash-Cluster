@@ -6,7 +6,7 @@ from PySide6.QtQml import QQmlApplicationEngine
 
 app = QGuiApplication(sys.argv)
 
-# Never display a mouse pointer
+# Hide cursor
 app.setOverrideCursor(QCursor(Qt.BlankCursor))
 
 engine = QQmlApplicationEngine()
@@ -18,6 +18,6 @@ engine.load(
 )
 
 if not engine.rootObjects():
-    sys.exit(-1)
+    sys.exit(1)
 
 sys.exit(app.exec())
