@@ -1,8 +1,9 @@
 #!/bin/bash
 
-PYTHON="/home/chummins/Github/Chummins-Dash-Cluster/.venv/bin/python"
+export QT_QPA_PLATFORM=eglfs
+export QT_QPA_EGLFS_INTEGRATION=eglfs_kms
+
+PYTHON="/home/chummins/Github/Chummins-Dash-Cluster/.venv-direct/bin/python"
 APP="/home/chummins/Github/Chummins-Dash-Cluster/main.py"
 
-echo "LAUNCHER: starting dashboard at $(cat /proc/uptime)" >&2
-
-exec "$PYTHON" "$APP"
+exec "$PYTHON" -u "$APP"
