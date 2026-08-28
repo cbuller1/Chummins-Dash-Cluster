@@ -45,15 +45,14 @@ boot_log("Qt environment configured")
 # ---------------------------------------------------------------------------
 # Qt / application imports
 #
-# Do the expensive PySide imports while Plymouth is still displaying the
-# boot splash. Qt does not take control of DRM simply by importing PySide.
+# These imports happen while Plymouth is still displaying the boot splash.
+# Importing PySide does not take ownership of DRM. QApplication does.
 # ---------------------------------------------------------------------------
 
 from PySide6.QtWidgets import QApplication
 from PySide6.QtQml import QQmlApplicationEngine
-from PySide6.QtCore import QUrl
+from PySide6.QtCore import QUrl, Qt
 from PySide6.QtGui import QCursor
-from PySide6.QtCore import Qt
 
 boot_log("PySide6 imported")
 
@@ -173,10 +172,14 @@ def release_plymouth() -> None:
     """
     Release Plymouth immediately before Qt EGLFS acquires DRM.
 
-    --retain-splash asks Plymouth to leave the current framebuffer contents
-    visible while giving up ownership of the display.
+    The dashboard itself remains unprivileged. A root-owned helper is allowed
+    through sudoers to perform only:
 
-    Qt EGLFS can then acquire DRM/KMS and replace the retained image.
+        plymouth quit --retain-splash
+
+    This allows Plymouth to keep displaying the boot image while Python and
+    PySide import, then release DRM immediately before QApplication/EGLFS
+    acquires the display.
     """
 
     boot_log("releasing Plymouth")
@@ -186,9 +189,9 @@ def release_plymouth() -> None:
     try:
         result = subprocess.run(
             [
-                "/usr/bin/plymouth",
-                "quit",
-                "--retain-splash",
+                "/usr/bin/sudo",
+                "-n",
+                "/usr/local/sbin/chummins-plymouth-quit",
             ],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,
@@ -214,7 +217,7 @@ def release_plymouth() -> None:
 
     except FileNotFoundError:
         boot_log(
-            "Plymouth executable not found — continuing"
+            "Plymouth helper or sudo not found — continuing"
         )
 
     except subprocess.TimeoutExpired:
@@ -238,8 +241,7 @@ def main() -> None:
     # -----------------------------------------------------------------------
     # Arguments
     #
-    # Do as much non-display work as practical while Plymouth still owns
-    # the screen.
+    # Do non-display work while Plymouth still owns the screen.
     # -----------------------------------------------------------------------
 
     args = _parse_args()
@@ -249,7 +251,7 @@ def main() -> None:
     # -----------------------------------------------------------------------
     # Visual handoff
     #
-    # This is the important ordering:
+    # Correct ordering:
     #
     #   Plymouth owns DRM
     #       ↓
@@ -259,8 +261,8 @@ def main() -> None:
     #       ↓
     #   QApplication/EGLFS acquires DRM
     #
-    # Never wait for frameSwapped before releasing Plymouth. EGLFS cannot
-    # render that frame while Plymouth still owns DRM.
+    # Do NOT wait for frameSwapped before releasing Plymouth. EGLFS cannot
+    # render a frame while Plymouth still owns DRM.
     # -----------------------------------------------------------------------
 
     release_plymouth()
@@ -275,7 +277,7 @@ def main() -> None:
 
     boot_log("QApplication created")
 
-    # Hide the pointer for the instrument-cluster UI.
+    # Hide the mouse pointer for the instrument cluster.
     app.setOverrideCursor(
         QCursor(Qt.CursorShape.BlankCursor)
     )
