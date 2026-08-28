@@ -1,6 +1,5 @@
 import argparse
 import os
-import subprocess
 import sys
 from pathlib import Path
 
@@ -58,37 +57,6 @@ def _parse_args() -> argparse.Namespace:
     args, _ = parser.parse_known_args()
 
     return args
-
-
-# ---------------------------------------------------------------------------
-# Plymouth handoff
-# ---------------------------------------------------------------------------
-
-def dismiss_plymouth() -> None:
-    """
-    Tell Plymouth to release the display.
-
-    This is called only after Qt has presented the dashboard's first frame,
-    preventing a black gap between the boot splash and dashboard.
-    """
-
-    try:
-        subprocess.Popen(
-            [
-                "sudo",
-                "-n",
-                "/usr/bin/plymouth",
-                "quit",
-            ],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-
-    except Exception:
-        # Plymouth may not be running when the application is started
-        # manually during development. That should not prevent the
-        # dashboard from starting.
-        pass
 
 
 # ---------------------------------------------------------------------------
@@ -180,48 +148,6 @@ def main() -> None:
         backend.save_data()
 
         sys.exit(-1)
-
-    # -----------------------------------------------------------------------
-    # Plymouth -> Dashboard handoff
-    # -----------------------------------------------------------------------
-
-    window = engine.rootObjects()[0]
-
-    plymouth_dismissed = False
-
-    def first_frame_presented() -> None:
-        """
-        Called when Qt reports that a rendered frame has been swapped
-        to the display.
-        """
-
-        nonlocal plymouth_dismissed
-
-        if plymouth_dismissed:
-            return
-
-        plymouth_dismissed = True
-
-        # Disconnect immediately so this only happens once.
-        try:
-            window.frameSwapped.disconnect(
-                first_frame_presented
-            )
-        except (RuntimeError, TypeError):
-            pass
-
-        dismiss_plymouth()
-
-    # QQuickWindow emits frameSwapped after presenting a frame.
-    if hasattr(window, "frameSwapped"):
-        window.frameSwapped.connect(
-            first_frame_presented
-        )
-
-    else:
-        # Fallback in case the root QML object isn't a QQuickWindow.
-        # This shouldn't normally happen with the dashboard.
-        dismiss_plymouth()
 
     # -----------------------------------------------------------------------
     # Run application
