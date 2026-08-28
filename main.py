@@ -1,6 +1,7 @@
 import argparse
 import configparser
 import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -43,11 +44,16 @@ boot_log("Qt environment configured")
 
 # ---------------------------------------------------------------------------
 # Qt / application imports
+#
+# Do the expensive PySide imports while Plymouth is still displaying the
+# boot splash. Qt does not take control of DRM simply by importing PySide.
 # ---------------------------------------------------------------------------
 
 from PySide6.QtWidgets import QApplication
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import QUrl
+from PySide6.QtGui import QCursor
+from PySide6.QtCore import Qt
 
 boot_log("PySide6 imported")
 
@@ -57,64 +63,169 @@ boot_log("DashBackend imported")
 
 
 # ---------------------------------------------------------------------------
-# Command-line arguments  (hardware.ini provides defaults; CLI args override)
+# Command-line arguments
+# hardware.ini provides defaults; CLI args override
 # ---------------------------------------------------------------------------
 
 def _parse_args() -> argparse.Namespace:
-    # Load hardware.ini — values here become the default for every arg below.
     hw = configparser.ConfigParser()
     hw.read(PROJECT_ROOT / "hardware.ini")
 
     parser = argparse.ArgumentParser(
         description="Chummins Dash",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="Default port/baud values are read from hardware.ini in the project root.",
+        epilog=(
+            "Default port/baud values are read from hardware.ini "
+            "in the project root."
+        ),
     )
 
     parser.add_argument(
         "--port",
         metavar="PORT",
-        help="Waveshare ESP32 USB serial port.  Overrides hardware.ini [waveshare] port.",
+        help=(
+            "Waveshare ESP32 USB serial port. "
+            "Overrides hardware.ini [waveshare] port."
+        ),
     )
 
     parser.add_argument(
         "--baud",
         type=int,
         metavar="BAUD",
-        help="Waveshare baud rate.  Overrides hardware.ini [waveshare] baud.",
+        help=(
+            "Waveshare baud rate. "
+            "Overrides hardware.ini [waveshare] baud."
+        ),
     )
 
     parser.add_argument(
         "--sim",
         action="store_true",
-        help="Run in simulation mode (no hardware required).  Overrides hardware.ini [app] sim.",
+        help=(
+            "Run in simulation mode (no hardware required). "
+            "Overrides hardware.ini [app] sim."
+        ),
     )
 
     parser.add_argument(
         "--gps-port",
         metavar="PORT",
-        help="Feather GPS USB serial port.  Overrides hardware.ini [feather_gps] port.",
+        help=(
+            "Feather GPS USB serial port. "
+            "Overrides hardware.ini [feather_gps] port."
+        ),
     )
 
     parser.add_argument(
         "--gps-baud",
         type=int,
         metavar="BAUD",
-        help="Feather GPS baud rate.  Overrides hardware.ini [feather_gps] baud.",
+        help=(
+            "Feather GPS baud rate. "
+            "Overrides hardware.ini [feather_gps] baud."
+        ),
     )
 
-    # Apply hardware.ini values as argparse defaults so CLI args still override.
     parser.set_defaults(
-        port     = hw.get("waveshare",  "port", fallback=None) or None,
-        baud     = hw.getint("waveshare",  "baud", fallback=115200),
-        sim      = hw.getboolean("app", "sim", fallback=False),
-        gps_port = hw.get("feather_gps", "port", fallback=None) or None,
-        gps_baud = hw.getint("feather_gps", "baud", fallback=115200),
+        port=hw.get(
+            "waveshare",
+            "port",
+            fallback=None,
+        ) or None,
+
+        baud=hw.getint(
+            "waveshare",
+            "baud",
+            fallback=115200,
+        ),
+
+        sim=hw.getboolean(
+            "app",
+            "sim",
+            fallback=False,
+        ),
+
+        gps_port=hw.get(
+            "feather_gps",
+            "port",
+            fallback=None,
+        ) or None,
+
+        gps_baud=hw.getint(
+            "feather_gps",
+            "baud",
+            fallback=115200,
+        ),
     )
 
-    # parse_known_args lets Qt platform arguments (--platform, etc.) pass through.
+    # Allow Qt-specific command-line arguments to pass through.
     args, _ = parser.parse_known_args()
+
     return args
+
+
+# ---------------------------------------------------------------------------
+# Plymouth handoff
+# ---------------------------------------------------------------------------
+
+def release_plymouth() -> None:
+    """
+    Release Plymouth immediately before Qt EGLFS acquires DRM.
+
+    --retain-splash asks Plymouth to leave the current framebuffer contents
+    visible while giving up ownership of the display.
+
+    Qt EGLFS can then acquire DRM/KMS and replace the retained image.
+    """
+
+    boot_log("releasing Plymouth")
+
+    start = time.monotonic()
+
+    try:
+        result = subprocess.run(
+            [
+                "/usr/bin/plymouth",
+                "quit",
+                "--retain-splash",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=3.0,
+            check=False,
+        )
+
+        elapsed = time.monotonic() - start
+
+        if result.returncode == 0:
+            boot_log(
+                f"Plymouth released in {elapsed:.3f}s"
+            )
+        else:
+            error = (result.stderr or "").strip()
+
+            boot_log(
+                "Plymouth quit returned "
+                f"{result.returncode} after {elapsed:.3f}s"
+                + (f": {error}" if error else "")
+            )
+
+    except FileNotFoundError:
+        boot_log(
+            "Plymouth executable not found — continuing"
+        )
+
+    except subprocess.TimeoutExpired:
+        boot_log(
+            "Plymouth quit timed out — continuing"
+        )
+
+    except Exception as exc:
+        boot_log(
+            f"Plymouth release failed: {exc}"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -126,11 +237,33 @@ def main() -> None:
 
     # -----------------------------------------------------------------------
     # Arguments
+    #
+    # Do as much non-display work as practical while Plymouth still owns
+    # the screen.
     # -----------------------------------------------------------------------
 
     args = _parse_args()
 
     boot_log("arguments parsed")
+
+    # -----------------------------------------------------------------------
+    # Visual handoff
+    #
+    # This is the important ordering:
+    #
+    #   Plymouth owns DRM
+    #       ↓
+    #   Python/PySide imports complete
+    #       ↓
+    #   Plymouth releases DRM
+    #       ↓
+    #   QApplication/EGLFS acquires DRM
+    #
+    # Never wait for frameSwapped before releasing Plymouth. EGLFS cannot
+    # render that frame while Plymouth still owns DRM.
+    # -----------------------------------------------------------------------
+
+    release_plymouth()
 
     # -----------------------------------------------------------------------
     # Qt application
@@ -141,6 +274,13 @@ def main() -> None:
     app = QApplication(sys.argv)
 
     boot_log("QApplication created")
+
+    # Hide the pointer for the instrument-cluster UI.
+    app.setOverrideCursor(
+        QCursor(Qt.CursorShape.BlankCursor)
+    )
+
+    boot_log("cursor hidden")
 
     # -----------------------------------------------------------------------
     # Dashboard backend
@@ -159,6 +299,7 @@ def main() -> None:
     boot_log("creating vehicle data reader")
 
     reader = None
+
     if args.port:
         from backend.inputs.esp32_serial import ESP32Serial
 
@@ -169,7 +310,8 @@ def main() -> None:
         )
 
         boot_log(
-            f"ESP32Serial created: port={args.port}, baud={args.baud}"
+            f"ESP32Serial created: "
+            f"port={args.port}, baud={args.baud}"
         )
 
     elif args.sim:
@@ -181,8 +323,10 @@ def main() -> None:
 
     else:
         print(
-            "WARNING: no data source configured — UI will show zero values.\n"
-            "  Set [waveshare] port in hardware.ini, or pass --port / --sim.",
+            "WARNING: no data source configured — "
+            "UI will show zero values.\n"
+            "  Set [waveshare] port in hardware.ini, "
+            "or pass --port / --sim.",
             flush=True,
         )
 
@@ -192,11 +336,16 @@ def main() -> None:
         reader.start()
         boot_log("vehicle data reader started")
     else:
-        boot_log("no vehicle data reader — UI running in display-only mode")
+        boot_log(
+            "no vehicle data reader — "
+            "UI running in display-only mode"
+        )
 
     # -----------------------------------------------------------------------
-    # Feather GPS reader (optional — speed, odometer, trip)
+    # Feather GPS reader
     # -----------------------------------------------------------------------
+
+    gps_reader = None
 
     if args.gps_port:
         from backend.inputs.feather_gps_serial import FeatherGPSSerial
@@ -206,8 +355,13 @@ def main() -> None:
             args.gps_port,
             args.gps_baud,
         )
+
         gps_reader.start()
-        boot_log(f"FeatherGPSSerial started: port={args.gps_port}")
+
+        boot_log(
+            f"FeatherGPSSerial started: "
+            f"port={args.gps_port}"
+        )
 
     # -----------------------------------------------------------------------
     # QML engine
@@ -238,7 +392,9 @@ def main() -> None:
         / "App.qml"
     )
 
-    boot_log(f"about to load App.qml: {qml_file}")
+    boot_log(
+        f"about to load App.qml: {qml_file}"
+    )
 
     # -----------------------------------------------------------------------
     # Load dashboard
@@ -257,14 +413,15 @@ def main() -> None:
     # -----------------------------------------------------------------------
 
     if not engine.rootObjects():
-        boot_log("ERROR: QML root object failed to load")
+        boot_log(
+            "ERROR: QML root object failed to load"
+        )
 
         print(
             "ERROR: QML root object failed to load.",
             file=sys.stderr,
         )
 
-        data_logger.stop()
         backend.save_data()
 
         sys.exit(-1)
@@ -288,10 +445,6 @@ def main() -> None:
     del engine
 
     boot_log("QML engine destroyed")
-
-    data_logger.stop()
-
-    boot_log("DataLogger stopped")
 
     # Flush final mileage / persistent vehicle data before exit.
     backend.save_data()
