@@ -62,5 +62,34 @@ Window {
             }
         }
     }
+
+    Rectangle {
+        anchors.fill: parent
+        color: "black"
+        opacity: 1.0 - backend.brightness
+        z: 100
+        visible: opacity > 0.01
+        Behavior on opacity { NumberAnimation { duration: 150 } }
+    }
+
+    Rectangle {
+        id: startupFade
+        anchors.fill: parent
+        color: "black"
+        opacity: 1.0
+        z: 200
+
+        Component.onCompleted: fadeOut.start()
+
+        NumberAnimation {
+            id: fadeOut
+            target: startupFade
+            property: "opacity"
+            from: 1.0
+            to: 0.0
+            duration: 3500
+            easing.type: Easing.InOutQuad
+        }
+    }
 }
 

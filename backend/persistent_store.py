@@ -10,6 +10,7 @@ _DEFAULTS: dict[str, float] = {
     "trans_oil_trip":  0.0,
     "diff_fluid_trip": 0.0,
     "coolant_trip":    0.0,
+    "brightness":      1.0,
 }
 
 

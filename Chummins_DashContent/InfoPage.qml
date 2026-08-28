@@ -47,7 +47,12 @@ Rectangle {
         Row {
             spacing: 6
             Rectangle { width: 8; height: 8; radius: 4; anchors.verticalCenter: parent.verticalCenter; color: backend.esp32Connected ? "#48D978" : "#FF4444" }
-            Text { text: backend.esp32Connected ? "ESP32  CONNECTED" : "ESP32  NO SIGNAL"; color: backend.esp32Connected ? "#48D978" : "#FF4444"; font.pixelSize: 11 }
+            Text { text: backend.esp32Connected ? "WAVESHARE  OK" : "WAVESHARE  OFFLINE"; color: backend.esp32Connected ? "#48D978" : "#FF4444"; font.pixelSize: 11 }
+        }
+        Row {
+            spacing: 6
+            Rectangle { width: 8; height: 8; radius: 4; anchors.verticalCenter: parent.verticalCenter; color: backend.featherGpsConnected ? "#48D978" : "#FF4444" }
+            Text { text: backend.featherGpsConnected ? "GPS FEATHER  OK" : "GPS FEATHER  OFFLINE"; color: backend.featherGpsConnected ? "#48D978" : "#FF4444"; font.pixelSize: 11 }
         }
         Row {
             spacing: 6
@@ -77,7 +82,7 @@ Rectangle {
         anchors.top: serviceLabel.bottom; anchors.topMargin: 10
         anchors.left: parent.left; anchors.leftMargin: 20
         anchors.right: parent.right; anchors.rightMargin: 20
-        anchors.bottom: parent.bottom; anchors.bottomMargin: 14
+        anchors.bottom: brightnessDivider.top; anchors.bottomMargin: 8
         spacing: 10
 
         property real cardW: (width - 10) / 2
@@ -92,6 +97,64 @@ Rectangle {
             spacing: 10
             ServiceCard { width: serviceGrid.cardW; height: serviceGrid.cardH; label: "DIFF FLUID"; miles: backend.diffFluidTrip; onResetClicked: backend.resetCounter("diffFluidTrip") }
             ServiceCard { width: serviceGrid.cardW; height: serviceGrid.cardH; label: "COOLANT";    miles: backend.coolantTrip;   onResetClicked: backend.resetCounter("coolantTrip") }
+        }
+    }
+
+    Rectangle {
+        id: brightnessDivider
+        anchors.bottom: brightnessRow.top; anchors.bottomMargin: 8
+        anchors.left: parent.left; anchors.right: parent.right
+        height: 1; color: "#2a2a2a"
+    }
+
+    Row {
+        id: brightnessRow
+        anchors.bottom: parent.bottom; anchors.bottomMargin: 14
+        anchors.left: parent.left; anchors.leftMargin: 20
+        anchors.right: parent.right; anchors.rightMargin: 20
+        height: 36
+        spacing: 12
+
+        Text {
+            id: brightnessLabel
+            anchors.verticalCenter: parent.verticalCenter
+            text: "BRIGHTNESS"
+            color: "#555555"; font.pixelSize: 10; font.letterSpacing: 4; font.bold: true
+            width: 110
+        }
+
+        Slider {
+            id: brightnessSlider
+            anchors.verticalCenter: parent.verticalCenter
+            width: parent.width - brightnessLabel.width - brightnessValue.width - 24
+            from: 0.1; to: 1.0
+            value: backend.brightness
+            onMoved: backend.brightness = value
+
+            background: Rectangle {
+                x: brightnessSlider.leftPadding
+                y: brightnessSlider.topPadding + brightnessSlider.availableHeight / 2 - height / 2
+                width: brightnessSlider.availableWidth; height: 4; radius: 2
+                color: "#2a2a2a"
+                Rectangle {
+                    width: brightnessSlider.visualPosition * parent.width
+                    height: parent.height; radius: 2; color: "#48D978"
+                }
+            }
+            handle: Rectangle {
+                x: brightnessSlider.leftPadding + brightnessSlider.visualPosition * brightnessSlider.availableWidth - width / 2
+                y: brightnessSlider.topPadding + brightnessSlider.availableHeight / 2 - height / 2
+                width: 20; height: 20; radius: 10
+                color: "#FFFFFF"; border.color: "#48D978"; border.width: 2
+            }
+        }
+
+        Text {
+            id: brightnessValue
+            anchors.verticalCenter: parent.verticalCenter
+            text: Math.round(backend.brightness * 100) + "%"
+            color: "#FFFFFF"; font.pixelSize: 13; font.bold: true
+            width: 46; horizontalAlignment: Text.AlignRight
         }
     }
 
