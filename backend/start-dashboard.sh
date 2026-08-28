@@ -1,15 +1,17 @@
 #!/bin/bash
 
+SPLASH="/usr/share/plymouth/themes/chummins/boot.png"
 PYTHON="/home/chummins/Github/Chummins-Dash-Cluster/.venv/bin/python"
 APP="/home/chummins/Github/Chummins-Dash-Cluster/main.py"
-SPLASH="/home/chummins/Github/Chummins-Dash-Cluster/splash.py"
 
 echo "LAUNCHER: entered at $(cat /proc/uptime)" >&2
 
-# Start Qt splash
-"$PYTHON" "$SPLASH" &
+/usr/bin/swayimg \
+    -C info.show=no \
+    -f \
+    -s real \
+    "$SPLASH" &
 
-echo "LAUNCHER: splash started at $(cat /proc/uptime)" >&2
+echo "LAUNCHER: swayimg started at $(cat /proc/uptime)" >&2
 
-# Start the real dashboard
 exec "$PYTHON" "$APP"
