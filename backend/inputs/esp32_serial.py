@@ -5,7 +5,7 @@ Reads newline-delimited JSON from the ESP32 over USB CDC serial and pushes
 parsed values into DashBackend.
 
 Wire format (20 Hz, from firmware serial_protocol.cpp):
-    {"rpm":...,"tps":...,"boost":...,"lockup":...,"od":...,"gear":...,"range":...}\n
+    {"rpm":...,"tps":...,"boost":...,"lockup":...,"od":...,"blink_l":...,"blink_r":...,"ign":...,"gear":...,"range":...}\n
 
 Install dependency:  pip install pyserial
 """

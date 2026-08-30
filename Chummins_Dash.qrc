@@ -29,7 +29,7 @@
         <file>Chummins_DashContent/Speedometer.ui.qml</file>
         <file>Chummins_DashContent/Tachometer.ui.qml</file>
         <file>data/vehicle_data.json</file>
-        <file>firmware_waveshare/.pio/libdeps/waveshare-esp32s3-poe/ArduinoJson/library.json</file>
+        <file>firmware/waveshare/.pio/libdeps/waveshare-esp32s3-poe/ArduinoJson/library.json</file>
         <file>qml_imports/QtQuick/Studio/Components/qmldir</file>
         <file>qtquickcontrols2.conf</file>
     </qresource>

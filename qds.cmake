@@ -13,12 +13,12 @@ qt6_add_resources(${CMAKE_PROJECT_NAME} MainResource
         ".vscode/c_cpp_properties.json"
         ".vscode/settings.json"
         "data/vehicle_data.json"
-        "firmware_feather_gps/.pio/build/feather-m4-gps/idedata.json"
-        "firmware_feather_gps/.pio/libdeps/feather-m4-gps/ArduinoJson/library.json"
-        "firmware_feather_gps/.vscode/c_cpp_properties.json"
-        "firmware_feather_gps/.vscode/extensions.json"
-        "firmware_feather_gps/.vscode/launch.json"
-        "firmware_waveshare/.pio/libdeps/waveshare-esp32s3-poe/ArduinoJson/library.json"
+        "firmware/feather_gps/.pio/build/feather-m4-gps/idedata.json"
+        "firmware/feather_gps/.pio/libdeps/feather-m4-gps/ArduinoJson/library.json"
+        "firmware/feather_gps/.vscode/c_cpp_properties.json"
+        "firmware/feather_gps/.vscode/extensions.json"
+        "firmware/feather_gps/.vscode/launch.json"
+        "firmware/waveshare/.pio/libdeps/waveshare-esp32s3-poe/ArduinoJson/library.json"
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE

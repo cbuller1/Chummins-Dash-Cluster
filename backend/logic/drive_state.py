@@ -1,5 +1,5 @@
 """
-Drive state logic for a 1st-gen 12-valve Cummins 5.9 6BT.
+Drive state logic for a 1991.5 12-valve Cummins 5.9 6BT (K30 swap).
 
 States (highest to lowest priority):
     "redline"   — RPM at or above governor; ease off immediately
@@ -16,7 +16,7 @@ from dataclasses import dataclass
 
 @dataclass
 class DriveStateThresholds:
-    """12V Cummins 5.9 6BT defaults — tune to your P7100 pump."""
+    """1991.5 12-valve Cummins 5.9 6BT P7100 defaults — tune to your pump."""
     # Lugging with TC locked (manual lockup engaged at low RPM)
     lug_rpm_max: float = 1300.0        # RPM ceiling when lockup is on
     lug_tps_min_lockup: float = 25.0   # minimum TPS to care about with lockup on
