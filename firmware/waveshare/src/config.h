@@ -18,9 +18,11 @@
 #define PIN_CAN_RX           3   // matches WS_GPIO.h RXD2
 #define CAN_MSG_SENSORS      0x100  // TPS | Boost | Range from Feather M4
 
-// -- 8 Digital Inputs (optocoupler-isolated, active LOW) --------
+// -- 8 Digital Inputs (optocoupler-isolated) ----------------------------
 // WS_DIN library maps CH1=GPIO4 (reserved for RPM), CH2–CH8=GPIO5–11.
-// Channel = board label DIn. Active LOW: LOW = signal present.
+// Open-collector output: 12 V applied → GPIO LOW. Open/0 V → GPIO HIGH.
+// DI2 (LU) and DI3 (OD): 0 V = active — read directly (no inversion).
+// All other DIs: 12 V = active — inverted in firmware..
 //   board label → channel → GPIO
 //   DI1           CH1       GPIO4   (RPM input — not used as DI)
 //   DI2           CH2       GPIO5

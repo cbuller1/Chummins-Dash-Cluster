@@ -23,12 +23,13 @@ void digital_io_init() {
     }
 }
 
-// Optocouplers pull GPIO LOW when signal is present (active LOW)
+// Board optocouplers are open-collector: 12 V applied → GPIO LOW, open/0 V → GPIO HIGH.
+// LU/OD (0 V = active): no inversion needed. Standard (12 V = active): invert.
 bool di_read(uint8_t ch) {
     switch (ch) {
-        case 1: return !DIN_Read_CH1();
-        case 2: return !DIN_Read_CH2();
-        case 3: return !DIN_Read_CH3();
+        case 1: return !DIN_Read_CH1();  // reserved (RPM)
+        case 2: return  DIN_Read_CH2();  // DI_CH_LOCKUP    — 0 V = active
+        case 3: return  DIN_Read_CH3();  // DI_CH_OVERDRIVE — 0 V = active
         case 4: return !DIN_Read_CH4();
         case 5: return !DIN_Read_CH5();
         case 6: return !DIN_Read_CH6();

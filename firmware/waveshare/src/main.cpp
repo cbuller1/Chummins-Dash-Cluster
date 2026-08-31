@@ -36,5 +36,8 @@ void loop() {
     state.gear            = -1;   // not wired; use a spare DI for neutral if needed
     state.range           = can_get_range();
 
+    do_write(DO_CH_1, state.lockupActive);    // DO1 mirrors lockup state
+    do_write(DO_CH_2, state.overdriveActive); // DO2 mirrors overdrive state
+
     serial_publish(state);
 }

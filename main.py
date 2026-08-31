@@ -301,6 +301,11 @@ def main() -> None:
 
     boot_log("DashBackend created")
 
+    from backend.shutdown_timer import IgnitionShutdownTimer
+    _shutdown_timer = IgnitionShutdownTimer(backend)
+
+    boot_log("ignition shutdown timer armed")
+
     # -----------------------------------------------------------------------
     # Vehicle data source
     # -----------------------------------------------------------------------

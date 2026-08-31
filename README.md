@@ -273,6 +273,30 @@ CLI flags override `hardware.ini`:
 
 ---
 
+## Ignition-Off Auto Shutdown
+
+When the ignition hot signal (DI8) is lost, the dashboard waits 13 minutes then powers off the Pi. The timer cancels immediately if ignition is restored.
+
+This requires a passwordless sudoers entry for `shutdown`. Add it with:
+
+```bash
+sudo visudo -f /etc/sudoers.d/chummins-shutdown
+```
+
+Add this single line (replace `chummins` with your Pi username):
+
+```
+chummins ALL=(ALL) NOPASSWD: /sbin/shutdown
+```
+
+Verify it works without a password prompt:
+
+```bash
+sudo -n shutdown --help
+```
+
+---
+
 ## Drive State Logic
 
 The backend classifies engine state every frame using RPM, TPS, boost, lockup, and overdrive signals. States (highest priority first):
