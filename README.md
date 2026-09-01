@@ -69,11 +69,6 @@ Chummins-Dash-Cluster/
 ├── start-dashboard.sh              # Production launch script (EGLFS)
 ├── qtquickcontrols2.conf
 ├── Chummins_Dash.qmlproject        # Qt Design Studio project
-├── Chummins_Dash.qmlproject.qtds
-├── Chummins_Dash.qrc
-├── CMakeLists.txt
-├── CMakeLists.txt.shared
-├── qds.cmake
 │
 ├── .vscode/
 │   ├── c_cpp_properties.json       # IntelliSense config for ESP32 firmware
@@ -108,7 +103,6 @@ Chummins-Dash-Cluster/
 ├── firmware/
 │   ├── waveshare/                  # Waveshare ESP32-S3-POE-ETH-8DI-8DO
 │   │   ├── platformio.ini
-│   │   ├── compile_commands.json
 │   │   ├── src/
 │   │   │   ├── config.h            # Pin assignments, baud rates, channel mapping
 │   │   │   ├── main.cpp
@@ -131,7 +125,6 @@ Chummins-Dash-Cluster/
 │   │
 │   ├── feather_gps/                # Adafruit Feather M4 + GPS FeatherWing
 │   │   ├── platformio.ini
-│   │   ├── compile_commands.json
 │   │   └── src/
 │   │       ├── config.h            # GPS baud, FRAM address map, publish interval
 │   │       ├── main.cpp
@@ -147,19 +140,10 @@ Chummins-Dash-Cluster/
 │           ├── config.h            # ADC pins, divider ratios, CAN baud/ID
 │           └── main.cpp            # Reads ADCs, packs fixed-point CAN frame
 │
-├── App/                            # Qt/C++ application shim (Qt Design Studio)
-│   ├── main.cpp
-│   ├── CMakeLists.txt
-│   └── autogen/environment.h
-│
-├── cmake/
-│   └── insight.cmake
-│
 ├── data/
 │   └── vehicle_data.json           # Static vehicle reference data
 │
-├── Dependencies/                   # Qt Design Studio component library (generated)
-└── qml_imports/                    # Qt Quick Studio QML module shims (generated)
+└── qml_imports/                    # Runtime Qt Quick Studio QML components
 ```
 
 ---
