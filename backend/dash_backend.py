@@ -397,6 +397,9 @@ class DashBackend(QObject):
             self._store.save()
             self.brightnessChanged.emit()
 
+    def save_data(self) -> None:
+        self._store.save()
+
     @Slot(str)
     def resetCounter(self, name: str) -> None:
         """Reset a resettable trip counter by its QML property name."""

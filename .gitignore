@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.pyright/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# PlatformIO generated output and dependency caches
+.pio/
+compile_commands.json
+
+# Qt Design Studio machine-specific state
+*.qmlproject.qtds
+
+# Native build output
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+
+# VS Code generated databases
+.vscode/.browse.c_cpp.db*
+.vscode/ipch/
+
+# Logs and OS metadata
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini

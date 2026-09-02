@@ -104,7 +104,7 @@ Project {
     /* Required for deployment */
     targetDirectory: "/opt/Chummins_Dash"
 
-    enableCMakeGeneration: true
+    enableCMakeGeneration: false
     standaloneApp: true
 
     qdsVersion: "4.8"
