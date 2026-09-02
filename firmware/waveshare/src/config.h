@@ -50,6 +50,7 @@
 #define DO_CH_6             6   // DO6
 #define DO_CH_7             7   // DO7
 #define DO_CH_8             8   // DO8
+#define RELAY_ENABLE_DELAY_MS 15000
 
 // -- Serial (USB CDC) -------------------------------------------
 #define SERIAL_BAUD          115200
