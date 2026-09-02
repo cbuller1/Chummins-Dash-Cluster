@@ -13,11 +13,13 @@ static const uint8_t DI_INIT_CHANNELS[] = {
     DI_CH_SPARE_1, DI_CH_SPARE_2, DI_CH_IGNITION
 };
 static const uint8_t DI_GPIO_FOR_CH[] = { 0, 4, 5, 6, 7, 8, 9, 10, 11 }; // index = channel
+static uint32_t relayEnableAtMs = 0;
 
 void digital_io_init() {
     Dout_Immediate_Enable = false;
     I2C_Init();                          // Wire on SDA=GPIO42, SCL=GPIO41
     TCA9554PWR_Init(0x00, 0x00);         // all DO outputs, all LOW (relays off)
+    relayEnableAtMs = millis() + RELAY_ENABLE_DELAY_MS;
     for (uint8_t ch : DI_INIT_CHANNELS) {
         pinMode(DI_GPIO_FOR_CH[ch], INPUT_PULLUP);
     }
@@ -39,6 +41,11 @@ bool di_read(uint8_t ch) {
     }
 }
 
+bool relay_outputs_enabled() {
+    return (int32_t)(millis() - relayEnableAtMs) >= 0;
+}
+
 void do_write(uint8_t ch, bool on) {
+    if (!relay_outputs_enabled()) return;
     Dout_CHx(ch, on);  // TCA9554 I2C expander
 }
