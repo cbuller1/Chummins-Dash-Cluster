@@ -1181,44 +1181,10 @@ Item {
         // ==================================================
         // BROAD CURVED-GLASS REFLECTION
         // ==================================================
-        Rectangle {
-            id: glassReflectionBroad
-
-            width: 185
-            height: 42
-
-            x: 34
-            y: 45
-
-            radius: 21
-            rotation: -18
-
-            color: "#FFFFFF"
-            opacity: 0.075
-
-            z: 51
-        }
 
         // ==================================================
         // SECONDARY REFLECTION
         // ==================================================
-        Rectangle {
-            id: glassReflectionMid
-
-            width: 110
-            height: 13
-
-            x: 56
-            y: 61
-
-            radius: 7
-            rotation: -18
-
-            color: "#FFFFFF"
-            opacity: 0.12
-
-            z: 52
-        }
 
         // ==================================================
         // SHARP SPECULAR HIGHLIGHT

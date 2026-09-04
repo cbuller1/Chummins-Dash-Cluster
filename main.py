@@ -314,7 +314,14 @@ def main() -> None:
 
     reader = None
 
-    if args.port:
+    if args.sim:
+        from backend.inputs.sim_reader import SimReader
+
+        reader = SimReader(backend)
+
+        boot_log("SimReader created (simulation mode)")
+
+    elif args.port:
         from backend.inputs.esp32_serial import ESP32Serial
 
         reader = ESP32Serial(
@@ -327,13 +334,6 @@ def main() -> None:
             f"ESP32Serial created: "
             f"port={args.port}, baud={args.baud}"
         )
-
-    elif args.sim:
-        from backend.inputs.sim_reader import SimReader
-
-        reader = SimReader(backend)
-
-        boot_log("SimReader created (simulation mode)")
 
     else:
         print(
