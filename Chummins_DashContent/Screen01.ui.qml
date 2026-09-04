@@ -70,6 +70,7 @@ Rectangle {
         height: 290
 
         rpm: backend.rpm
+        darkMode: backend.darkMode
     }
 
     Speedometer {
@@ -79,6 +80,7 @@ Rectangle {
         width: 250
         height: 250
         speed: backend.speed
+        darkMode: backend.darkMode
     }
 
     Image {

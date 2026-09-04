@@ -34,6 +34,22 @@ Rectangle {
             Text { text: "ODOMETER"; color: "#666666"; font.pixelSize: 11; font.letterSpacing: 3 }
             Text { text: backend.odometer.toFixed(1) + " mi"; color: "#FFFFFF"; font.pixelSize: 34; font.bold: true }
             Text { text: "non-resettable"; color: "#333333"; font.pixelSize: 11 }
+            Rectangle {
+                width: 174; height: 28; radius: 4
+                color: backend.darkMode ? "#0d2a0d" : "#1a1a1a"
+                border.color: backend.darkMode ? "#48D978" : "#666666"
+                border.width: 1
+                Text {
+                    anchors.centerIn: parent
+                    text: backend.darkMode ? "GAUGE THEME: DARK" : "GAUGE THEME: LIGHT"
+                    color: backend.darkMode ? "#48D978" : "#D8DAD7"
+                    font.pixelSize: 10; font.bold: true; font.letterSpacing: 1
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: backend.darkMode = !backend.darkMode
+                }
+            }
         }
     }
 
