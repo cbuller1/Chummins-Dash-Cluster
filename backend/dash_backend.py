@@ -38,6 +38,7 @@ class DashBackend(QObject):
     diffFluidTripChanged = Signal()
     coolantTripChanged = Signal()
     brightnessChanged = Signal()
+    darkModeChanged = Signal()
     counterResetRequested = Signal(str)  # forwarded to Feather GPS firmware
 
     def __init__(self, parent=None):
@@ -68,6 +69,7 @@ class DashBackend(QObject):
         self._featherGpsConnected: bool = False
         self._ignitionOn: bool = False
         self._brightness: float = self._store.get("brightness")
+        self._dark_mode: bool = bool(self._store.get("dark_mode"))
 
     # ------------------------------------------------------------------
     # rpm
@@ -396,6 +398,23 @@ class DashBackend(QObject):
             self._store.set("brightness", value)
             self._store.save()
             self.brightnessChanged.emit()
+
+    # ------------------------------------------------------------------
+    # darkMode
+    # ------------------------------------------------------------------
+
+    @Property(bool, notify=darkModeChanged)
+    def darkMode(self) -> bool:
+        return self._dark_mode
+
+    @darkMode.setter
+    def darkMode(self, value: bool) -> None:
+        value = bool(value)
+        if self._dark_mode != value:
+            self._dark_mode = value
+            self._store.set("dark_mode", 1.0 if value else 0.0)
+            self._store.save()
+            self.darkModeChanged.emit()
 
     def save_data(self) -> None:
         self._store.save()

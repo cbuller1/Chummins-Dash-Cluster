@@ -9,6 +9,14 @@ Item {
     // ==============================
     property real speed: 50
     property real maximumSpeed: 100
+    property bool darkMode: true
+
+    readonly property color faceColor: darkMode ? "#080A0B" : "#F2F1EC"
+    readonly property color faceBorderColor: darkMode ? "#4A4D4F" : "#92928F"
+    readonly property color majorMarkColor: darkMode ? "#F2F2EE" : "#202020"
+    readonly property color minorMarkColor: darkMode ? "#AEB3B0" : "#606060"
+    readonly property color scaleTextColor: darkMode ? "#F2F2EE" : "#181818"
+    readonly property color secondaryTextColor: darkMode ? "#D8DAD7" : "#000000"
 
     // ==============================
     // COMPLETE GAUGE SIZE
@@ -79,11 +87,10 @@ Item {
 
             radius: 146
 
-            // AUTOMETER WHITE FACE
-            color: "#F2F1EC"
+            color: root.faceColor
 
             border.width: 10
-            border.color: "#92928F"
+            border.color: root.faceBorderColor
         }
 
         // ==================================================
@@ -103,7 +110,7 @@ Item {
             end: 225
 
             strokeWidth: 8
-            strokeColor: "#343434"
+            strokeColor: root.majorMarkColor
             fillColor: "transparent"
         }
 
@@ -121,7 +128,7 @@ Item {
             end: 225
 
             strokeWidth: 2
-            strokeColor: "#A0A09C"
+            strokeColor: root.darkMode ? "#7F8587" : "#A0A09C"
             fillColor: "transparent"
         }
 
@@ -151,7 +158,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#202020"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -167,7 +174,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#606060"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -183,7 +190,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#202020"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -199,7 +206,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#606060"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -215,7 +222,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#202020"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -231,7 +238,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#606060"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -247,7 +254,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#202020"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -263,7 +270,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#606060"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -279,7 +286,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#202020"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -295,7 +302,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#606060"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -311,7 +318,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#202020"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -327,7 +334,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#606060"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -343,7 +350,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#202020"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -359,7 +366,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#606060"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -375,7 +382,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#202020"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -391,7 +398,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#606060"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -407,7 +414,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#202020"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -423,7 +430,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#606060"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -439,7 +446,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#202020"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -455,7 +462,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#606060"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -471,7 +478,7 @@ Item {
                     y: 25
 
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#202020"
+                    color: root.majorMarkColor
                 }
             }
         }
@@ -493,7 +500,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -512,7 +519,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -531,7 +538,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -550,7 +557,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -569,7 +576,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -588,7 +595,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -607,7 +614,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -626,7 +633,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -645,7 +652,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -664,7 +671,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -683,7 +690,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -698,7 +705,7 @@ Item {
         Text {
             id: gaugeBrand
             y: 97
-            color: "#000000"
+            color: root.secondaryTextColor
             text: "K/30"
             font.family: "Roboto Condensed"
             font.pixelSize: 16
@@ -790,7 +797,7 @@ Item {
 
             text: Math.round(root.speed)
 
-            color: "#181818"
+            color: root.darkMode ? "#FFFFFF" : "#181818"
 
             font.pixelSize: 45
             font.bold: true
@@ -818,7 +825,7 @@ Item {
 
             text: "MPH"
 
-            color: "#000000"
+            color: root.secondaryTextColor
 
             font.pixelSize: 12
             font.bold: true
