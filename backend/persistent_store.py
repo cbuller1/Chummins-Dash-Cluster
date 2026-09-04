@@ -11,6 +11,7 @@ _DEFAULTS: dict[str, float] = {
     "diff_fluid_trip": 0.0,
     "coolant_trip":    0.0,
     "brightness":      1.0,
+    "dark_mode":       1.0,
 }
 
 

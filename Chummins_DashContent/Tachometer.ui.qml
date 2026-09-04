@@ -9,6 +9,12 @@ Item {
     // ==============================
     property real rpm: 1500
     property real maximumRpm: 3000
+    property bool darkMode: true
+
+    readonly property color majorMarkColor: darkMode ? "#F2F2EE" : "#181818"
+    readonly property color minorMarkColor: darkMode ? "#AEB3B0" : "#666663"
+    readonly property color scaleTextColor: darkMode ? "#F2F2EE" : "#181818"
+    readonly property color secondaryTextColor: darkMode ? "#D8DAD7" : "#000000"
 
     // ==============================
     // COMPLETE GAUGE SIZE
@@ -79,10 +85,10 @@ Item {
 
             radius: 146
 
-            color: "#F2F1EC"
+            color: root.darkMode ? "#080A0B" : "#F2F1EC"
 
             border.width: 10
-            border.color: "#92928F"
+            border.color: root.darkMode ? "#4A4D4F" : "#92928F"
         }
 
         // ==========================
@@ -97,7 +103,7 @@ Item {
 
             radius: 136
 
-            color: "#6A6A67"
+            color: root.darkMode ? "#303436" : "#6A6A67"
         }
 
         // ==========================
@@ -112,10 +118,10 @@ Item {
 
             radius: 132
 
-            color: "#F6F5F0"
+            color: root.darkMode ? "#080A0B" : "#F6F5F0"
 
             border.width: 1
-            border.color: "#D8D7D2"
+            border.color: root.darkMode ? "#4A4D4F" : "#D8D7D2"
         }
 
         // ==================================================
@@ -133,7 +139,7 @@ Item {
             begin: 243
             end: 225
             strokeWidth: 6
-            strokeColor: "#3A3A3A"
+            strokeColor: root.darkMode ? "#858A88" : "#3A3A3A"
             fillColor: "transparent"
         }
 
@@ -144,7 +150,7 @@ Item {
             begin: 261
             end: 243
             strokeWidth: 6
-            strokeColor: "#3B3E3C"
+            strokeColor: root.darkMode ? "#8B908D" : "#3B3E3C"
             fillColor: "transparent"
         }
 
@@ -155,7 +161,7 @@ Item {
             begin: 279
             end: 261
             strokeWidth: 6
-            strokeColor: "#3D423F"
+            strokeColor: root.darkMode ? "#919693" : "#3D423F"
             fillColor: "transparent"
         }
 
@@ -166,7 +172,7 @@ Item {
             begin: 297
             end: 279
             strokeWidth: 6
-            strokeColor: "#3E4641"
+            strokeColor: root.darkMode ? "#979C99" : "#3E4641"
             fillColor: "transparent"
         }
 
@@ -177,7 +183,7 @@ Item {
             begin: 315
             end: 297
             strokeWidth: 6
-            strokeColor: "#404A43"
+            strokeColor: root.darkMode ? "#9DA29F" : "#404A43"
             fillColor: "transparent"
         }
 
@@ -188,7 +194,7 @@ Item {
             begin: 333
             end: 315
             strokeWidth: 6
-            strokeColor: "#414F46"
+            strokeColor: root.darkMode ? "#A3A8A5" : "#414F46"
             fillColor: "transparent"
         }
 
@@ -199,7 +205,7 @@ Item {
             begin: 351
             end: 333
             strokeWidth: 6
-            strokeColor: "#435448"
+            strokeColor: root.darkMode ? "#A9AEAB" : "#435448"
             fillColor: "transparent"
         }
 
@@ -419,7 +425,7 @@ Item {
             end: 225
 
             strokeWidth: 2
-            strokeColor: "#A0A09C"
+            strokeColor: root.darkMode ? "#7F8587" : "#A0A09C"
             fillColor: "transparent"
         }
 
@@ -447,7 +453,7 @@ Item {
                     height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#181818"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -462,7 +468,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -477,7 +483,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -492,7 +498,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -507,7 +513,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -522,7 +528,7 @@ Item {
                     height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#181818"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -537,7 +543,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -552,7 +558,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -567,7 +573,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -582,7 +588,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -597,7 +603,7 @@ Item {
                     height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#181818"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -612,7 +618,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -627,7 +633,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -642,7 +648,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -657,7 +663,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -672,7 +678,7 @@ Item {
                     height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#181818"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -687,7 +693,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -702,7 +708,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -717,7 +723,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -732,7 +738,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -747,7 +753,7 @@ Item {
                     height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#181818"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -762,7 +768,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -777,7 +783,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -792,7 +798,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -807,7 +813,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -822,7 +828,7 @@ Item {
                     height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#181818"
+                    color: root.majorMarkColor
                 }
             }
 
@@ -837,7 +843,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -852,7 +858,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -867,7 +873,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -882,7 +888,7 @@ Item {
                     height: 8
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#666663"
+                    color: root.minorMarkColor
                 }
             }
 
@@ -897,7 +903,7 @@ Item {
                     height: 16
                     y: 25
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "#181818"
+                    color: root.majorMarkColor
                 }
             }
         }
@@ -917,7 +923,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -935,7 +941,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -953,7 +959,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -971,7 +977,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -989,7 +995,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -1007,7 +1013,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -1025,7 +1031,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            color: "#181818"
+            color: root.scaleTextColor
 
             font.pixelSize: 12
             font.bold: true
@@ -1044,7 +1050,7 @@ Item {
 
             text: "Cummins"
 
-            color: "#000000"
+            color: root.secondaryTextColor
 
             font.family: "Roboto Condensed"
             font.pixelSize: 14
@@ -1117,12 +1123,11 @@ Item {
 
             width: 6
             height: 6
+            color: "#000000"
 
             anchors.centerIn: parent
 
             radius: 4
-
-            color: "#000000"
 
             border.width: 0
             border.color: "#3D3D3B"
@@ -1164,7 +1169,7 @@ Item {
 
             text: Math.round(root.rpm)
 
-            color: "#181818"
+            color: root.darkMode ? "#FFFFFF" : "#181818"
 
             font.pixelSize: 40
             font.bold: true
