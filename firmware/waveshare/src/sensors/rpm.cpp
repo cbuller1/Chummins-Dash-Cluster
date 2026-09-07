@@ -2,37 +2,59 @@
 #include "../config.h"
 #include <Arduino.h>
 
-static volatile uint32_t _pulseCount = 0;
-static float             _currentRpm = 0.0f;
-static uint32_t          _lastSampleMs = 0;
+static volatile uint32_t _lastAcceptedUs = 0;  // timestamp of last glitch-free edge
+static volatile uint32_t _lastPeriodUs   = 0;  // interval between last two valid edges
+static volatile uint32_t _pulseSeq       = 0;  // increments once per accepted pulse
 
-static const uint32_t SAMPLE_WINDOW_MS = 100;
+static float _filteredRpm = 0.0f;
 
+// Integer-only; reject ringing/duplicate edges closer than the minimum interval.
 static void IRAM_ATTR onPulse() {
-    _pulseCount++;
+    uint32_t now   = micros();
+    uint32_t delta = now - _lastAcceptedUs;  // unsigned subtraction is rollover-safe
+    if (delta < RPM_MIN_PULSE_INTERVAL_US) return;
+    _lastPeriodUs   = delta;
+    _lastAcceptedUs = now;
+    _pulseSeq++;
 }
 
 void rpm_init() {
     pinMode(PIN_RPM_INPUT, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(PIN_RPM_INPUT), onPulse, RISING);
-    _lastSampleMs = millis();
 }
 
 void rpm_update() {
-    uint32_t now = millis();
-    if (now - _lastSampleMs < SAMPLE_WINDOW_MS) return;
-
-    uint32_t elapsed = now - _lastSampleMs;
-    _lastSampleMs = now;
+    static uint32_t lastSeq = 0;
+    static bool     seeded  = false;
 
     noInterrupts();
-    uint32_t count = _pulseCount;
-    _pulseCount = 0;
+    uint32_t seq            = _pulseSeq;
+    uint32_t periodUs       = _lastPeriodUs;
+    uint32_t lastAcceptedUs = _lastAcceptedUs;
     interrupts();
 
-    _currentRpm = (count * 60000.0f) / (RPM_PULSES_PER_REV * elapsed);
+    // Engine stopped: clean fall to 0 and force re-seed on next start.
+    if ((micros() - lastAcceptedUs) > (RPM_TIMEOUT_MS * 1000UL)) {
+        _filteredRpm = 0.0f;
+        seeded = false;
+        lastSeq = seq;
+        return;
+    }
+
+    if (seq == lastSeq) return;  // no new pulse this iteration
+    lastSeq = seq;
+
+    float raw = 60000000.0f / ((float)periodUs * (float)RPM_PULSES_PER_REV);
+    if (raw > (float)RPM_MAX_REASONABLE) return;  // corrupt interval; keep last value
+
+    if (!seeded) {
+        _filteredRpm = raw;
+        seeded = true;
+    } else {
+        _filteredRpm = RPM_EMA_ALPHA * raw + (1.0f - RPM_EMA_ALPHA) * _filteredRpm;
+    }
 }
 
 float rpm_get() {
-    return _currentRpm;
+    return _filteredRpm;
 }

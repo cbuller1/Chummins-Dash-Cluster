@@ -11,7 +11,11 @@
 // For alternator W-terminal: set PULSES_PER_REV to
 //   (alternator_poles / 2) * pulley_ratio  (e.g. 3 * 2.5 = 7.5)
 #define PIN_RPM_INPUT        4
-#define RPM_PULSES_PER_REV   4      // Universal tach adapter: 4 pulses per revolution
+#define RPM_PULSES_PER_REV   4      // GlowShift adapter: 4 pulses per revolution
+#define RPM_MIN_PULSE_INTERVAL_US 1500  // glitch rejection; 3000 RPM pulses are ~5 ms apart
+#define RPM_MAX_REASONABLE   4000   // mechanically governed; reject corrupt intervals above this
+#define RPM_TIMEOUT_MS       500    // no pulses for this long -> RPM 0 (idle period ~21 ms)
+#define RPM_EMA_ALPHA        0.2f   // smoothing: 20% newest sample, 80% history
 
 // -- CAN bus (TWAI) — receives sensor data from Feather M4 ------
 #define PIN_CAN_TX           2   // matches WS_GPIO.h TXD2
