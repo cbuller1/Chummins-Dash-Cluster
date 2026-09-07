@@ -12,23 +12,32 @@ Item {
     // ==============================
     // COMPONENT SIZE
     // ==============================
-    width: 60
-    height: 20
+    width: 92
+    height: 24
 
     // ==============================
     // LOCKUP INDICATOR
     // ==============================
-    Text {
-        id: lockupText
+    Rectangle {
+        anchors.fill: parent
+        radius: 5
 
-        anchors.centerIn: parent
+        color: root.active ? "#48D978" : "#1A1A1A"
+        border.width: 2
+        border.color: root.active ? "#48D978" : "#4A4A4A"
 
-        text: "LOCKUP"
+        Text {
+            id: lockupText
 
-        color: root.active ? "#48D978" : "#707070"
+            anchors.centerIn: parent
 
-        font.pixelSize: 13
-        font.bold: true
-        font.letterSpacing: 0.5
+            text: "LOCKUP"
+
+            color: root.active ? "#101010" : "#5F5F5F"
+
+            font.pixelSize: 14
+            font.bold: true
+            font.letterSpacing: 1.0
+        }
     }
 }

@@ -12,23 +12,32 @@ Item {
     // ==============================
     // COMPONENT SIZE
     // ==============================
-    width: 40
-    height: 20
+    width: 118
+    height: 24
 
     // ==============================
     // O/D INDICATOR
     // ==============================
-    Text {
-        id: overdriveText
+    Rectangle {
+        anchors.fill: parent
+        radius: 5
 
-        anchors.centerIn: parent
+        color: root.active ? "#48D978" : "#1A1A1A"
+        border.width: 2
+        border.color: root.active ? "#48D978" : "#4A4A4A"
 
-        text: "OVERDRIVE"
+        Text {
+            id: overdriveText
 
-        color: root.active ? "#48D978" : "#707070"
+            anchors.centerIn: parent
 
-        font.pixelSize: 13
-        font.bold: true
-        font.letterSpacing: 0.5
+            text: "OVERDRIVE"
+
+            color: root.active ? "#101010" : "#5F5F5F"
+
+            font.pixelSize: 14
+            font.bold: true
+            font.letterSpacing: 1.0
+        }
     }
 }

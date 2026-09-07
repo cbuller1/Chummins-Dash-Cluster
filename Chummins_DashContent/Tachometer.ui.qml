@@ -1095,9 +1095,10 @@ Item {
 
         LockupStatus {
             id: lockupStatus
-            x: 121
-            y: 249
+            y: 246
+            anchors.horizontalCenterOffset: 0
             active: backend.lockupActive
+            anchors.horizontalCenter: parent.horizontalCenter
         }
 
         // ==================================================

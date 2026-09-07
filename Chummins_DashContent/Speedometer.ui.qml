@@ -807,9 +807,12 @@ Item {
 
         OverdriveStatus {
             id: overdriveStatus
-            x: 129
-            y: 252
+            y: 249
+            width: 100
+            height: 24
+            anchors.horizontalCenterOffset: 0
             active: backend.overdriveActive
+            anchors.horizontalCenter: parent.horizontalCenter
         }
 
         // ==================================================
