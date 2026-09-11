@@ -60,6 +60,17 @@ print(config.get(sys.argv[2], sys.argv[3], fallback="").strip())
 PY
 }
 
+wait_for_port() {
+    local port="$1"
+    local timeout="${2:-15}"
+    local waited=0
+
+    while [[ ! -e "$port" && "$waited" -lt "$timeout" ]]; do
+        sleep 1
+        waited=$((waited + 1))
+    done
+}
+
 flash() {
     local target="$1"
     local section="$2"
@@ -78,6 +89,10 @@ flash() {
 
     echo "Flashing $target on $port..."
     "$PIO" run --project-dir "$PROJECT_ROOT/firmware/$target" --target upload --upload-port "$port"
+
+    # Boards re-enumerate on reset after flashing; let the bus settle before the next upload.
+    wait_for_port "$port"
+    sleep 2
 }
 
 cd "$PROJECT_ROOT"
