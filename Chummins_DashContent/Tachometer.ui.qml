@@ -11,6 +11,15 @@ Item {
     property real maximumRpm: 3000
     property bool darkMode: true
 
+    // Low-pass filtered copy of rpm; absorbs sensor noise/jitter before it reaches the needle/readout.
+    property real displayRpm: rpm
+    Timer {
+        interval: 50
+        running: true
+        repeat: true
+        onTriggered: root.displayRpm += (root.rpm - root.displayRpm) * 0.25
+    }
+
     readonly property color majorMarkColor: darkMode ? "#F2F2EE" : "#181818"
     readonly property color minorMarkColor: darkMode ? "#AEB3B0" : "#666663"
     readonly property color scaleTextColor: darkMode ? "#F2F2EE" : "#181818"
@@ -1068,7 +1077,7 @@ Item {
 
             anchors.centerIn: parent
 
-            rotation: -135 + (270 * Math.min(Math.max(root.rpm, 0),
+            rotation: -135 + (270 * Math.min(Math.max(root.displayRpm, 0),
                                              root.maximumRpm) / root.maximumRpm)
 
             Behavior on rotation {
@@ -1168,7 +1177,7 @@ Item {
 
             y: 195
 
-            text: Math.round(root.rpm)
+            text: Math.round(root.displayRpm)
 
             color: root.darkMode ? "#FFFFFF" : "#181818"
 
