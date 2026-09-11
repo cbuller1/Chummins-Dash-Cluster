@@ -35,7 +35,7 @@ Item {
 
             color: root.active ? "#101010" : "#5F5F5F"
 
-            font.pixelSize: 14
+            font.pixelSize: 12
             font.bold: true
             font.letterSpacing: 1.0
         }
