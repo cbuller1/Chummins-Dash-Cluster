@@ -13,6 +13,9 @@ static void IRAM_ATTR onPulse() {
     uint32_t now   = micros();
     uint32_t delta = now - _lastAcceptedUs;  // unsigned subtraction is rollover-safe
     if (delta < RPM_MIN_PULSE_INTERVAL_US) return;
+    // A mid-cycle noise edge halves the measured interval and doubles the RPM reading;
+    // real engine speed can't double between two consecutive pulses, so reject it.
+    if (_lastPeriodUs > 0 && delta < (_lastPeriodUs / 2)) return;
     _lastPeriodUs   = delta;
     _lastAcceptedUs = now;
     _pulseSeq++;
