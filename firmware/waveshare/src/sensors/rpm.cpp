@@ -5,6 +5,7 @@
 static volatile uint32_t _lastAcceptedUs = 0;  // timestamp of last glitch-free edge
 static volatile uint32_t _lastPeriodUs   = 0;  // interval between last two valid edges
 static volatile uint32_t _pulseSeq       = 0;  // increments once per accepted pulse
+static volatile uint8_t  _rejectStreak   = 0;  // consecutive halving-rejects since last accept
 
 static float _filteredRpm = 0.0f;
 
@@ -14,8 +15,14 @@ static void IRAM_ATTR onPulse() {
     uint32_t delta = now - _lastAcceptedUs;  // unsigned subtraction is rollover-safe
     if (delta < RPM_MIN_PULSE_INTERVAL_US) return;
     // A mid-cycle noise edge halves the measured interval and doubles the RPM reading;
-    // real engine speed can't double between two consecutive pulses, so reject it.
-    if (_lastPeriodUs > 0 && delta < (_lastPeriodUs / 2)) return;
+    // real engine speed can't double between two consecutive pulses, so reject it once.
+    // But if the "halved" interval repeats, the baseline itself is stale (e.g. post-stall) —
+    // accept it so a bad baseline can't permanently lock RPM out.
+    if (_lastPeriodUs > 0 && delta < (_lastPeriodUs / 2) && _rejectStreak < 2) {
+        _rejectStreak++;
+        return;
+    }
+    _rejectStreak   = 0;
     _lastPeriodUs   = delta;
     _lastAcceptedUs = now;
     _pulseSeq++;
@@ -41,6 +48,11 @@ void rpm_update() {
         _filteredRpm = 0.0f;
         seeded = false;
         lastSeq = seq;
+        // Stale baseline period would otherwise reject every real pulse after restart.
+        noInterrupts();
+        _lastPeriodUs = 0;
+        _rejectStreak = 0;
+        interrupts();
         return;
     }
 
