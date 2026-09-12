@@ -1177,7 +1177,8 @@ Item {
 
             y: 195
 
-            text: Math.round(root.displayRpm)
+            // Round to the nearest 10 RPM so the readout doesn't flicker in the single digits.
+            text: Math.round(root.displayRpm / 10) * 10
 
             color: root.darkMode ? "#FFFFFF" : "#181818"
 
