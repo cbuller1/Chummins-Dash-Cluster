@@ -11,7 +11,9 @@
 // For alternator W-terminal: set PULSES_PER_REV to
 //   (alternator_poles / 2) * pulley_ratio  (e.g. 3 * 2.5 = 7.5)
 #define PIN_RPM_INPUT        4
-#define RPM_PULSES_PER_REV   4      // GlowShift adapter: 4 pulses per revolution
+// Field-calibrated from handheld tach with pulses/rev = 4: displayed 1020 RPM vs
+// actual 688 RPM at idle (4 * 1020 / 688 ≈ 5.93). Re-verify at a second RPM if it still drifts.
+#define RPM_PULSES_PER_REV   5.93f
 #define RPM_MIN_PULSE_INTERVAL_US 1500  // glitch rejection; 3000 RPM pulses are ~5 ms apart
 #define RPM_MAX_REASONABLE   4000   // mechanically governed; reject corrupt intervals above this
 #define RPM_TIMEOUT_MS       500    // no pulses for this long -> RPM 0 (idle period ~21 ms)
